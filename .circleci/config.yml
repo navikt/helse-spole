@@ -1,76 +1,69 @@
 version: 2.1
-orbs:
-  barkendeploy: navikt/barkendeploy@dev:master
-  slack: circleci/slack@3.2.0
-
-parameters:
-  deploy_branch:
-    type: boolean
-    default: false
-
 jobs:
-  build_jar:
+  build:
     docker:
       - image: "circleci/openjdk:11-jdk"
     steps:
       - checkout
       - setup_remote_docker
-      - barkendeploy/init
+      - restore_cache:
+          key: dependency-cache-{{ checksum "pom.xml" }}
       - run:
-          name: Build jar file
+          name: Bygg
           command: ./mvnw install
-      - barkendeploy/skip-on-env-var:
-          env_var: '"<< pipeline.parameters.deploy_branch >>"'
-      - barkendeploy/docker-build
-      - barkendeploy/docker-login
-      - barkendeploy/docker-push
-  run_tests:
-    docker:
-      - image: "circleci/openjdk:11-jdk"
-    steps:
-      - checkout
-      - setup_remote_docker
-      - barkendeploy/init
+      - save_cache:
+          key: dependency-cache-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
       - run:
-          name: Run tests
-          command: ./mvnw test
+          name: Setup some ENV
+          command: |
+            mkdir /tmp/workspace
+            export COMMIT_SHORT=$(git rev-parse --short HEAD)
+            echo "DOCKER_TAG=navikt/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_PROJECT_REPONAME}:$COMMIT_SHORT" >> /tmp/workspace/properties.env
+            cat /tmp/workspace/properties.env >> $BASH_ENV
+      - run:
+          name: Build docker image
+          command: |
+            echo "DOCKER_TAG=$DOCKER_TAG"
+            docker build -t docker.pkg.github.com/$DOCKER_TAG .
+      - run:
+          name: Docker push
+          command: |
+            echo "DOCKER_TAG=$DOCKER_TAG"
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
+            echo "Pushing with tag $DOCKER_TAG"
+            docker push docker.pkg.github.com/$DOCKER_TAG
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - properties.env
+
+  deploy_preprod:
+    docker:
+      - image: "navikt/deployment-cli:44bb04ecc11c0e57ac539744411c70794dd31899"
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - run:
+          name: Set up environment variables
+          command: cat /tmp/workspace/properties.env >> $BASH_ENV
+      - run:
+          name: Create github deployment for dev-sbs
+          command: source $BASH_ENV; deployment-cli deploy create --team=tbd --cluster=dev-fss -r=naiserator.yaml --version=${DOCKER_TAG} --repository=$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+
 workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - build_jar:
-          context: barkendeploy
+      - build:
           filters:
             branches:
               only: master
-      - barkendeploy/deployment:
-          deployments:
-            - barkendeploy/deploy-create:
-                cluster: dev-fss
-            - barkendeploy/deploy-create:
-                cluster: prod-fss
-          context: barkendeploy
+      - deploy_preprod:
           requires:
-            - build_jar
-  test_branch:
-    unless: << pipeline.parameters.deploy_branch >>
-    jobs:
-      - run_tests:
+            - build
           filters:
             branches:
-              ignore: master
-  build_branch:
-    when: << pipeline.parameters.deploy_branch >>
-    jobs:
-      - build_jar:
-          context: barkendeploy
-          filters:
-            branches:
-              ignore: master
-      - barkendeploy/deployment:
-          deployments:
-            - barkendeploy/deploy-create:
-                cluster: dev-fss
-          context: barkendeploy
-          requires:
-            - build_jar 
+              only: master
