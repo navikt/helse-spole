@@ -10,7 +10,7 @@ jobs:
           key: dependency-cache-{{ checksum "pom.xml" }}
       - run:
           name: Bygg
-          command: mvn install
+          command: ./mvnw install
       - save_cache:
           key: dependency-cache-{{ checksum "pom.xml" }}
           paths:
