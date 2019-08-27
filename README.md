@@ -1,4 +1,3 @@
-[![CircleCI](https://circleci.com/gh/navikt/helse-spole/tree/master.svg?style=svg)](https://circleci.com/gh/navikt/helse-spole/tree/master)
 [![Known Vulnerabilities](https://snyk.io/test/github/navikt/helse-spole/badge.svg)](https://snyk.io/test/github/navikt/helse-spole)
 
 ## Spole 
