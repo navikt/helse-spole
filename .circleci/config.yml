@@ -54,8 +54,7 @@ jobs:
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
               mkdir /tmp/workspace
               export COMMIT_SHORT=$(git rev-parse --short HEAD)
-              echo "DOCKER_TAG=navikt/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_PROJECT_REPONAME}:$COMMIT_SHORT" >> /tmp/workspace/properties.env
-              cat /tmp/workspace/properties.env >> $BASH_ENV
+              export DOCKER_TAG=navikt/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_PROJECT_REPONAME}:$COMMIT_SHORT"
               echo "DOCKER_TAG=$DOCKER_TAG"
               docker build -t docker.pkg.github.com/$DOCKER_TAG .
               echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
