@@ -65,8 +65,8 @@ jobs:
           command: |
             set -e
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
-              echo "deploying $DOCKER_TAG to preprod"
-              PREPROD_NAISERATOR=$(cat deploy/preprod.json | jq '.spec.image="'$DOCKER_TAG'"' -c)
+              echo "deploying docker.pkg.github.com/$DOCKER_TAG to preprod"
+              PREPROD_NAISERATOR=$(cat deploy/preprod.json | jq '.spec.image="'docker.pkg.github.com/$DOCKER_TAG'"' -c)
               PREPROD_DEPLOYMENT=$(cat deploy/deployreq.json | jq '.payload.kubernetes.resources += ['$PREPROD_NAISERATOR']')
               PREPROD_DEPLOYMENT=$(echo $PREPROD_DEPLOYMENT | jq '.environment = "dev-fss"')
               curl -i -n \
@@ -80,8 +80,8 @@ jobs:
           command: |
             set -e
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
-              echo "deploying $DOCKER_TAG to prod"
-              PROD_NAISERATOR=$(cat deploy/prod.json | jq '.spec.image="'$DOCKER_TAG'"' -c)
+              echo "deploying docker.pkg.github.com/$DOCKER_TAG to prod"
+              PROD_NAISERATOR=$(cat deploy/prod.json | jq '.spec.image="'docker.pkg.github.com/$DOCKER_TAG'"' -c)
               PROD_DEPLOYMENT=$(cat deploy/deployreq.json | jq '.payload.kubernetes.resources += ['$PROD_NAISERATOR']')
               PROD_DEPLOYMENT=$(echo $PROD_DEPLOYMENT | jq '.environment = "prod-fss"')
               curl -i -n \
