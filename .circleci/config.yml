@@ -54,8 +54,8 @@ jobs:
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
               export COMMIT_SHORT=$(git rev-parse --short HEAD)
               export RELEASE_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec | cut -f 1 -d "-")
-              export DOCKER_TAG=navikt/spole:$RELEASE_VERSION.$CIRCLE_BUILD_NUM-$COMMIT_SHORT
-              docker build . -t $DOCKER_TAG
+              export DOCKER_TAG=navikt/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_PROJECT_REPONAME}:$COMMIT_SHORT
+              docker build . -t docker.pkg.github.com/$DOCKER_TAG
               echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
               echo "export DOCKER_TAG=$DOCKER_TAG" >> $BASH_ENV
               docker push docker.pkg.github.com/$DOCKER_TAG
