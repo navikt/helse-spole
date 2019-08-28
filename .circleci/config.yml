@@ -54,19 +54,19 @@ jobs:
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
               export COMMIT_SHORT=$(git rev-parse --short HEAD)
               export RELEASE_VERSION=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec | cut -f 1 -d "-")
-              export DOCKER_TAG=docker.pkg.github.com/navikt/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_PROJECT_REPONAME}:$COMMIT_SHORT
+              export DOCKER_TAG=navikt/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_PROJECT_REPONAME}:$COMMIT_SHORT
               docker build . -t $DOCKER_TAG
               echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
               echo "export DOCKER_TAG=$DOCKER_TAG" >> $BASH_ENV
-              docker push $DOCKER_TAG
+              docker push docker.pkg.github.com/$DOCKER_TAG
             fi
       - run:
           name: deploy to preprod
           command: |
             set -e
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
-              echo "deploying $DOCKER_TAG to preprod"
-              PREPROD_NAISERATOR=$(cat deploy/preprod.json | jq '.spec.image="'$DOCKER_TAG'"' -c)
+              echo "deploying docker.pkg.github.com/$DOCKER_TAG to preprod"
+              PREPROD_NAISERATOR=$(cat deploy/preprod.json | jq '.spec.image="'docker.pkg.github.com/$DOCKER_TAG'"' -c)
               PREPROD_DEPLOYMENT=$(cat deploy/deployreq.json | jq '.payload.kubernetes.resources += ['$PREPROD_NAISERATOR']')
               PREPROD_DEPLOYMENT=$(echo $PREPROD_DEPLOYMENT | jq '.environment = "dev-fss"')
               curl -i -n \
@@ -80,8 +80,8 @@ jobs:
           command: |
             set -e
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ "${CIRCLE_BRANCH}" = "master" ]; then
-              echo "deploying $DOCKER_TAG to prod"
-              PROD_NAISERATOR=$(cat deploy/prod.json | jq '.spec.image="'$DOCKER_TAG'"' -c)
+              echo "deploying docker.pkg.github.com/$DOCKER_TAG to prod"
+              PROD_NAISERATOR=$(cat deploy/prod.json | jq '.spec.image="'docker.pkg.github.com/$DOCKER_TAG'"' -c)
               PROD_DEPLOYMENT=$(cat deploy/deployreq.json | jq '.payload.kubernetes.resources += ['$PROD_NAISERATOR']')
               PROD_DEPLOYMENT=$(echo $PROD_DEPLOYMENT | jq '.environment = "prod-fss"')
               curl -i -n \
