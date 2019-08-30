@@ -24,4 +24,11 @@ jobs:
         DOCKER_VERSION=$(echo $GITHUB_SHA | cut -c1-7)
         echo "building $DOCKER_BASE_NAME:$DOCKER_VERSION"
         docker build . --pull -t $DOCKER_BASE_NAME:$DOCKER_VERSION
+    - name: Dytte image
+      run: |
+        echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
+        docker push navikt/helse-spole/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
