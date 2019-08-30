@@ -12,7 +12,7 @@
     "env": [],
     "image": "${DOCKER_TAG}",
     "ingresses": [
-      "https://spenn.nais.preprod.local"
+      "https://spole.nais.preprod.local"
     ],
     "liveness": {
       "failureThreshold": 10,

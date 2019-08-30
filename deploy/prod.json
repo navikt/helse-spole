@@ -12,7 +12,7 @@
     "env": [],
     "image": "${DOCKER_TAG}",
     "ingresses": [
-      "https://spenn.nais.adeo.no"
+      "https://spole.nais.adeo.no"
     ],
     "liveness": {
       "failureThreshold": 10,
