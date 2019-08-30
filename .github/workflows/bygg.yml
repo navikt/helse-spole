@@ -17,17 +17,17 @@ jobs:
       with:
         java-version: 1.11
     - name: Build with Maven
-      run: echo "mvn package --file pom.xml"
-#    - name: Snekre sammen et image
-#      run: |
-#        DOCKER_BASE_NAME=navikt/helse-spole/helse-spole
-#        DOCKER_VERSION=$(echo $GITHUB_SHA | cut -c1-7)
-#        echo "building $DOCKER_BASE_NAME:$DOCKER_VERSION"
-#        docker build . --pull -t docker.pkg.github.com/$DOCKER_BASE_NAME:$DOCKER_VERSION
+      run: mvn package --file pom.xml
+    - name: Snekre sammen et image
+      run: |
+        DOCKER_BASE_NAME=navikt/helse-spole/helse-spole
+        DOCKER_VERSION=$(echo $GITHUB_SHA | cut -c1-7)
+        echo "building $DOCKER_BASE_NAME:$DOCKER_VERSION"
+        docker build . --pull -t docker.pkg.github.com/$DOCKER_BASE_NAME:$DOCKER_VERSION
     - name: Dytte image
       run: |
         echo "$DOCKER_PASSWORD" | docker login --username hholmste --password-stdin docker.pkg.github.com
-#        docker push docker.pkg.github.com/navikt/helse-spole/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
+        docker push docker.pkg.github.com/navikt/helse-spole/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
