@@ -20,5 +20,6 @@ jobs:
       run: echo "mvn package --file pom.xml"
     - name: Snekre sammen et image
       run: echo "$DOCKER_BASE_NAME:$(echo $GITHUB_SHA | cut -c1-7)"
+      env:
         DOCKER_BASE_NAME: navikt/helse-spole
 
