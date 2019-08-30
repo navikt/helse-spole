@@ -22,5 +22,5 @@ jobs:
       run: echo "$DOCKER_BASE_NAME:$DOCKER_VERSION"
       env:
         DOCKER_BASE_NAME: navikt/helse-spole
-        DOCKER_VERSION: ${{ $GITHIB_SHA | cut-c1-7 }}
+        DOCKER_VERSION: ${{ $GITHUB_SHA | cut-c1-7 }}
 
