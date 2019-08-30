@@ -48,6 +48,8 @@ jobs:
         DEPLOY_PAYLOAD=$(echo $DEPLOY_PAYLOAD | jq '.environment = "'$NAV_CLUSTER'"')
         DEPLOY_PAYLOAD=$(echo $DEPLOY_PAYLOAD | jq '.ref = "'$(echo $GITHUB_SHA | cut -c1-7)'"')
         echo "curling https://api.github.com/repos/navikt/helse-spole/deployments"
+        echo "payload:"
+        echo "$DEPLOY_PAYLOAD"
         curl -i -n --fail \
            -X POST \
            -u $DEPLOY_USERNAME:$DEPLOY_PASSWORD \
