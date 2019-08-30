@@ -24,5 +24,6 @@ jobs:
         DOCKER_TAG: ${{ $GITHUB_SHA }}
     - name: Lage et image navn
       run: |
+        echo "let's try something"
         echo "navikt/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
 
