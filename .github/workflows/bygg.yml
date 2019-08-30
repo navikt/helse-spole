@@ -25,5 +25,5 @@ jobs:
     - name: Lage et image navn
       run: |
         echo "let's try something"
-        echo "navikt/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
+        echo "navikt/helse-spole:$(echo 123412341234 | cut -c1-7)
 
