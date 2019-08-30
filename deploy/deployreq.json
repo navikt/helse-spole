@@ -1,6 +1,6 @@
 {
     "ref": "master",
-    "description": "Automated deployment request from pipeline",
+    "description": "Automated deployment request from github",
     "environment": "set_from_pipeline",
     "required_contexts": [],
     "payload": {
