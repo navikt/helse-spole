@@ -20,7 +20,8 @@ jobs:
       run: echo "mvn package --file pom.xml"
     - name: Snekre sammen et image
       run: |
-        DOCKER_BASE_NAME=navikt/helse-spole
+        DOCKER_BASE_NAME=navikt/helse-spole/helse-spole
         DOCKER_VERSION=$(echo $GITHUB_SHA | cut -c1-7)
-        echo "$DOCKER_BASE_NAME:$DOCKER_VERSION"
+        echo "building $DOCKER_BASE_NAME:$DOCKER_VERSION"
+        docker build . --pull -t $DOCKER_BASE_NAME:$DOCKER_VERSION
 
