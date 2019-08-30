@@ -19,10 +19,8 @@ jobs:
     - name: Build with Maven
       run: echo "mvn package --file pom.xml"
     - name: Snekre sammen et image
-      run: echo "$DOCKER_TAG"
+      run: echo "$DOCKER_BASE_NAME:$DOCKER_VERSION"
       env:
-        DOCKER_TAG: here_goes_docker_tag
-    - name: Lage et image navn
-      run: |
-        echo $(echo $GITHUB_SHA | cut -c1-7)
+        DOCKER_BASE_NAME: navikt/helse-spole
+        DOCKER_VERSION: ${{ $GITHIB_SHA | cut-c1-7 }}
 
