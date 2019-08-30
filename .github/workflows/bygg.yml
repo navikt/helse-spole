@@ -21,9 +21,8 @@ jobs:
     - name: Snekre sammen et image
       run: echo "DOCKER_TAG"
       env:
-        DOCKER_TAG: ${{ $GITHUB_SHA }}
+        DOCKER_TAG: here_goes_docker_tag
     - name: Lage et image navn
       run: |
-        echo "let's try something"
-        echo "navikt/helse-spole:$(echo 123412341234 | cut -c1-7)
+        echo "navikt/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
 
