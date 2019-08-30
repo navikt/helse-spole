@@ -42,6 +42,8 @@ jobs:
         DOCKER_IMAGE: navikt/helse-spole/helse-spole
         NAV_CLUSTER: dev-fss
         NAISERATOR_FILE: deploy/preprod.json
+        DEPLOY_USERNAME: ${{ secrets.DEPLOY_USERNAME }}
+        DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
       run: |
         NAISERATOR=$(jq '.spec.image = "'$DOCKER_IMAGE':'$(echo $GITHUB_SHA | cut -c1-7)'"' -c $NAISERATOR_FILE)
         DEPLOY_PAYLOAD=$(jq ".payload.kubernetes.resources += [$NAISERATOR]" deploy/deployreq.json)
