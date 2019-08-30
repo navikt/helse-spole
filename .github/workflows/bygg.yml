@@ -31,4 +31,11 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout that code
+      uses: actions/checkout@v1
+    - name: deploy to dev-fss
+      
