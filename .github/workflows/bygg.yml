@@ -20,14 +20,14 @@ jobs:
       run: mvn package --file pom.xml
     - name: Snekre sammen et image
       run: |
-        DOCKER_BASE_NAME=navikt/helse-spole/helse-spole
+        DOCKER_BASE_NAME=navikt/helse-spole
         DOCKER_VERSION=$(echo $GITHUB_SHA | cut -c1-7)
         echo "building $DOCKER_BASE_NAME:$DOCKER_VERSION"
         docker build . --pull -t docker.pkg.github.com/$DOCKER_BASE_NAME:$DOCKER_VERSION
     - name: Dytte image
       run: |
         echo "$DOCKER_PASSWORD" | docker login --username hholmste --password-stdin docker.pkg.github.com
-        docker push docker.pkg.github.com/navikt/helse-spole/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
+        docker push docker.pkg.github.com/navikt/helse-spole:$(echo $GITHUB_SHA | cut -c1-7)
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -39,7 +39,7 @@ jobs:
       uses: actions/checkout@v1
     - name: deploy to dev-fss
       env:
-        DOCKER_IMAGE: navikt/helse-spole/helse-spole
+        DOCKER_IMAGE: navikt/helse-spole
         NAV_CLUSTER: dev-fss
         NAISERATOR_FILE: deploy/preprod.json
       run: |
@@ -47,10 +47,11 @@ jobs:
         DEPLOY_PAYLOAD=$(jq ".payload.kubernetes.resources += [$NAISERATOR]" deploy/deployreq.json)
         DEPLOY_PAYLOAD=$(echo $DEPLOY_PAYLOAD | jq '.environment = "'$NAV_CLUSTER'"')
         DEPLOY_PAYLOAD=$(echo $DEPLOY_PAYLOAD | jq '.ref = "'$(echo $GITHUB_SHA | cut -c1-7)'"')
+        echo "curling https://api.github.com/repos/navikt/helse-spole/deployments"
         curl -i -n --fail \
            -X POST \
            -u $DEPLOY_USERNAME:$DEPLOY_PASSWORD \
            -d "$DEPLOY_PAYLOAD" \
            -H "Accept: application/vnd.github.ant-man-preview+json" \
-           https://api.github.com/repos/helse-spole/deployments
+           https://api.github.com/repos/navikt/helse-spole/deployments
  
