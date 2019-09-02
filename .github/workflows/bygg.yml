@@ -42,8 +42,7 @@ jobs:
         DOCKER_IMAGE: navikt/helse-spole/helse-spole
         NAV_CLUSTER: dev-fss
         NAISERATOR_FILE: deploy/preprod.json
-        DEPLOY_USERNAME: ${{ secrets.DEPLOY_USERNAME }}
-        DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
+        DEPLOY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         NAISERATOR=$(jq '.spec.image = "'$DOCKER_IMAGE':'$(echo $GITHUB_SHA | cut -c1-7)'"' -c $NAISERATOR_FILE)
         DEPLOY_PAYLOAD=$(jq ".payload.kubernetes.resources += [$NAISERATOR]" deploy/deployreq.json)
@@ -54,7 +53,7 @@ jobs:
         echo "$DEPLOY_PAYLOAD"
         curl -i -n --fail \
            -X POST \
-           -u x-access-token:$DEPLOY_PASSWORD \
+           -u x-access-token:$GITHUB_TOKEN \
            -d "$DEPLOY_PAYLOAD" \
            -H "Accept: application/vnd.github.ant-man-preview+json" \
            https://api.github.com/repos/navikt/helse-spole/deployments
