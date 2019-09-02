@@ -46,10 +46,6 @@
         "memory": "256Mi"
       }
     },
-    "vault": {
-      "enabled": false
-    },
-    "webproxy": true,
     "team": "tbd"
   }
 }
