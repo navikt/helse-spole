@@ -10,7 +10,7 @@
   },
   "spec": {
     "env": [],
-    "image": "docker.pkg.github.com/${DOCKER_TAG}",
+    "image": "set_from_pipe",
     "ingresses": [
       "https://spole.nais.preprod.local"
     ],

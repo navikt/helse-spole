@@ -31,17 +31,43 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  deploy:
+  deploy_to_preprod:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: checkout that code
+    - name: checkout code
       uses: actions/checkout@v1
     - name: deploy to dev-fss
       env:
         DOCKER_IMAGE: navikt/helse-spole/helse-spole
         NAV_CLUSTER: dev-fss
         NAISERATOR_FILE: deploy/preprod.json
+        DEPLOY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        NAISERATOR=$(jq '.spec.image = "'docker.pkg.github.com/$DOCKER_IMAGE':'$(echo $GITHUB_SHA | cut -c1-7)'"' -c $NAISERATOR_FILE)
+        DEPLOY_PAYLOAD=$(jq ".payload.kubernetes.resources += [$NAISERATOR]" deploy/deployreq.json)
+        DEPLOY_PAYLOAD=$(echo $DEPLOY_PAYLOAD | jq '.environment = "'$NAV_CLUSTER'"')
+        DEPLOY_PAYLOAD=$(echo $DEPLOY_PAYLOAD | jq '.ref = "'$(echo $GITHUB_SHA | cut -c1-7)'"')
+        echo "curling https://api.github.com/repos/navikt/helse-spole/deployments"
+        echo "payload:"
+        echo "$DEPLOY_PAYLOAD"
+        curl -i -n --fail \
+           -X POST \
+           -u x-access-token:$DEPLOY_TOKEN \
+           -d "$DEPLOY_PAYLOAD" \
+           -H "Accept: application/vnd.github.ant-man-preview+json" \
+           https://api.github.com/repos/navikt/helse-spole/deployments
+  deploy_to_prod:
+    needs: deploy_to_preprod
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v1
+    - name: deploy to prod-fss
+      env:
+        DOCKER_IMAGE: navikt/helse-spole/helse-spole
+        NAV_CLUSTER: prod-fss
+        NAISERATOR_FILE: deploy/prod.json
         DEPLOY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         NAISERATOR=$(jq '.spec.image = "'docker.pkg.github.com/$DOCKER_IMAGE':'$(echo $GITHUB_SHA | cut -c1-7)'"' -c $NAISERATOR_FILE)
