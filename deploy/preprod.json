@@ -21,9 +21,9 @@
       "periodSeconds": 5,
       "timeout": 1
     },
-    "port": 8080,
+    "port": 8082,
     "prometheus": {
-      "enabled": true,
+      "enabled": false,
       "path": "/internal/metrics"
     },
     "readiness": {
