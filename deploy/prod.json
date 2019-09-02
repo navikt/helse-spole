@@ -23,7 +23,7 @@
     },
     "port": 8082,
     "prometheus": {
-      "enabled": false,
+      "enabled": true,
       "path": "/internal/metrics"
     },
     "readiness": {
