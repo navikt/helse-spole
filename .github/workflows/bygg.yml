@@ -1,4 +1,4 @@
-name: Bygge shiten
+name: Bygg og deploy 
 
 on:
   push:
@@ -53,7 +53,7 @@ jobs:
         echo "$DEPLOY_PAYLOAD"
         curl -i -n --fail \
            -X POST \
-           -u x-access-token:$GITHUB_TOKEN \
+           -u x-access-token:$DEPLOY_TOKEN \
            -d "$DEPLOY_PAYLOAD" \
            -H "Accept: application/vnd.github.ant-man-preview+json" \
            https://api.github.com/repos/navikt/helse-spole/deployments
