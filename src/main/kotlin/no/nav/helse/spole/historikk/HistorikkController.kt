@@ -1,11 +1,14 @@
 package no.nav.helse.spole.historikk
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 
 @RestController
-class HistorikkController(val infotrygd: PeriodeKilde, val spa: PeriodeKilde) {
+class HistorikkController(@Autowired @Qualifier("infotrygd") val infotrygd: PeriodeKilde,
+                          @Autowired @Qualifier("spa") val spa: PeriodeKilde) {
 
     @GetMapping("/sykepengeperioder/{aktørid}")
     fun hentPerioder(aktørId: AktørId, fom: LocalDate = LocalDate.now().minusYears(3)): Sykepengeperioder =
