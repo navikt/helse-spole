@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 data class Sykepengeperioder(val aktørId: AktørId, val perioder: Collection<Periode>)
 
+// om refusjon: ha med et utbetalt til orgnummer
 data class Periode(val fom: LocalDate, val tom: LocalDate, val grad: Grad, val kilde: Kilde)
 
 typealias AktørId = String
