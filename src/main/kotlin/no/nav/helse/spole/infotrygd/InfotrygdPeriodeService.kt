@@ -1,5 +1,6 @@
 package no.nav.helse.spole.infotrygd
 
+import no.nav.helse.spole.appsupport.Azure
 import no.nav.helse.spole.historikk.AktørId
 import no.nav.helse.spole.historikk.PeriodeKilde
 import no.nav.helse.spole.historikk.Sykepengeperioder
@@ -9,7 +10,7 @@ import java.time.LocalDate
 
 @Component
 @Qualifier("infotrygd")
-class InfotrygdPeriodeService : PeriodeKilde {
+class InfotrygdPeriodeService(val azure: Azure) : PeriodeKilde {
     override fun perioder(aktørId: AktørId, fom: LocalDate): Sykepengeperioder =
         Sykepengeperioder(aktørId, emptyList())
 }
