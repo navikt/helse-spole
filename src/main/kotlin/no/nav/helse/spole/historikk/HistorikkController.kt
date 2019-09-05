@@ -2,6 +2,7 @@ package no.nav.helse.spole.historikk
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
@@ -14,7 +15,7 @@ class HistorikkController(@Autowired @Qualifier("infotrygd") val infotrygd: Peri
 
     @GetMapping("/sykepengeperioder/{aktørId}")
     fun hentPerioder(@PathVariable("aktørId") aktørId: AktørId,
-                     @RequestParam("fom", required = false) fom: LocalDate?): Sykepengeperioder {
+                     @RequestParam("fom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fom: LocalDate?): Sykepengeperioder {
         val faktiskFom = fom ?: LocalDate.now().minusYears(3)
         return infotrygdPerioder(aktørId, faktiskFom).join(spaPerioder(aktørId, faktiskFom))
     }
