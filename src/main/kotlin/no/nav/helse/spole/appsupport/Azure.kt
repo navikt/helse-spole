@@ -15,22 +15,22 @@ import java.time.LocalDateTime
 @Component
 class Azure(val objectMapper: ObjectMapper) {
 
-    @Value("\$AZURE_CLIENT_ID")
+    @Value("\${azure.client.id}")
     lateinit var clientId: String
 
-    @Value("\$AZURE_CLIENT_SECRET")
+    @Value("\${azure.client.secret}")
     lateinit var clientSecret: String
 
-    @Value("\$AZURE_SCOPE")
+    @Value("\${azure.scope}")
     lateinit var scope: String
 
-    @Value("\$AZURE_TOKEN_ENDPOINT")
+    @Value("\${azure.url}")
     lateinit var tokenEndpoint: String
 
     private var token: Token = Token(tokenType = "not a token", expiresIn = 0, extExpiresIn = 0, accessToken = "not a token")
     private var expiry: LocalDateTime = LocalDateTime.now().minusYears(100)
 
-    fun getToken(): Token {
+    fun hentToken(): Token {
         if (isExpired()) {
             token = fetchTokenFromAzure()
             expiry = LocalDateTime.now().plusSeconds(token.expiresIn).minusSeconds(60)

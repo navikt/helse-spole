@@ -13,3 +13,22 @@ spring:
 
 server:
   port: 8082
+
+infotrygd:
+  url: https://infotrygd-sykepenger.nais.preprod.local/v1/hentSykepengerListe
+
+sts:
+  username: ${STS_REST_USERNAME:ikke_satt}
+  password: $(STS_REST_PASSWORD:ikke_satt_passord}
+  url: ${SECURITY_TOKEN_SERVICE_REST_URL:http://not.a.url}
+
+azure:
+  client:
+    id: ${AZURE_CLIENT_ID:ikke_satt}
+    secret: ${AZURE_CLIENT_SECRET:ikke_satt_passord}
+  url: ${AZURE_TOKEN_ENDPOINT:http://not.a.url}
+  scope: ${AZURE_SCOPE:ikke_satt_scope}
+
+services:
+  sparkel:
+    url: ${SPARKEL_BASE_URL:http://sparkel}
