@@ -44,7 +44,7 @@ class Azure(val objectMapper: ObjectMapper) {
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val form: MultiValueMap<String, String> = LinkedMultiValueMap<String, String>()
+        val form: MultiValueMap<String, String> = LinkedMultiValueMap()
         form.add("client_id", clientId)
         form.add("client_secret", clientSecret)
         form.add("scope", scope)

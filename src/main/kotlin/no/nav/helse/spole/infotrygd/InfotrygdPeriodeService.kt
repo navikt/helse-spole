@@ -5,6 +5,8 @@ import no.nav.helse.spole.historikk.Periode
 import no.nav.helse.spole.historikk.PeriodeKilde
 import no.nav.helse.spole.historikk.Sykepengeperioder
 import no.nav.helse.spole.infotrygd.fnr.Fodselsnummer
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import java.time.LocalDate
@@ -14,6 +16,7 @@ import java.time.LocalDate
 class InfotrygdPeriodeService(val fnrMapper: AktørTilFnrMapper, val infotrygd: InfotrygdIntegrasjon) : PeriodeKilde {
 
     override fun perioder(aktørId: AktørId, fom: LocalDate): Sykepengeperioder {
+        println("henter infotrygd-perioder")
         return Sykepengeperioder(aktørId, infotrygd.forFnr(fnrMapper.tilFnr(aktørId), fom))
     }
 }

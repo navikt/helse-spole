@@ -17,6 +17,7 @@ class HistorikkController(@Autowired @Qualifier("infotrygd") val infotrygd: Peri
     fun hentPerioder(@PathVariable("aktørId") aktørId: AktørId,
                      @RequestParam("fom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fom: LocalDate?): Sykepengeperioder {
         val faktiskFom = fom ?: LocalDate.now().minusYears(3)
+        println("leiter etter sykepenger fra omtrent $faktiskFom")
         return infotrygdPerioder(aktørId, faktiskFom).join(spaPerioder(aktørId, faktiskFom))
     }
 
