@@ -46,6 +46,9 @@
         "memory": "256Mi"
       }
     },
-    "team": "tbd"
+    "team": "tbd",
+    "vault": {
+        "enabled": true
+    }
   }
 }
