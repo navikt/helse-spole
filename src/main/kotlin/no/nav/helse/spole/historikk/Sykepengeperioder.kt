@@ -8,7 +8,7 @@ data class Sykepengeperioder(val aktørId: AktørId, val perioder: Collection<Pe
 data class Periode(val fom: LocalDate, val tom: LocalDate, val grad: Grad, val kilde: Kilde)
 
 typealias AktørId = String
-typealias Grad = Int
+typealias Grad = String
 
 enum class Kilde {
     INFOTRYGD,

@@ -28,7 +28,7 @@ class SykepengeperioderTest {
 
     @Test
     fun `Behold høyre siden, når venstre er tom`() {
-        val perioderA = Sykepengeperioder("a", listOf(Periode(LocalDate.now(), LocalDate.now(), 100, Kilde.INFOTRYGD)))
+        val perioderA = Sykepengeperioder("a", listOf(Periode(LocalDate.now(), LocalDate.now(), "100", Kilde.INFOTRYGD)))
         val perioderB = Sykepengeperioder("a", emptyList())
 
         val kombinert = perioderA.join(perioderB)
@@ -37,7 +37,7 @@ class SykepengeperioderTest {
 
     @Test
     fun `Behold venstre siden, når høyre er tom`() {
-        val perioderA = Sykepengeperioder("a", listOf(Periode(LocalDate.now(), LocalDate.now(), 100, Kilde.INFOTRYGD)))
+        val perioderA = Sykepengeperioder("a", listOf(Periode(LocalDate.now(), LocalDate.now(), "100", Kilde.INFOTRYGD)))
         val perioderB = Sykepengeperioder("a", emptyList())
 
         val kombinert = perioderB.join(perioderA)
@@ -46,7 +46,7 @@ class SykepengeperioderTest {
 
     @Test
     fun `Når begge sider har disjunkte perioder, så skal alle være med`() {
-        val template = Periode(fom = LocalDate.now(), tom = LocalDate.now(), grad = 100, kilde = Kilde.INFOTRYGD)
+        val template = Periode(fom = LocalDate.now(), tom = LocalDate.now(), grad = "100", kilde = Kilde.INFOTRYGD)
         val infoTrygdPeriode1 = template.copy(fom = template.fom.minusDays(160), tom = template.tom.minusDays(140))
         val infoTrygdPeriode2 = template.copy(fom = template.fom.minusDays(130), tom = template.tom.minusDays(110))
         val spaPeriode1 = template.copy(fom = template.fom.minusDays(60), tom = template.tom.minusDays(40), kilde = Kilde.SPA)
