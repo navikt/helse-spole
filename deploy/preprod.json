@@ -49,6 +49,7 @@
     "team": "tbd",
     "vault": {
         "enabled": true
-    }
+    },
+    "webproxy": "true"
   }
 }
