@@ -26,8 +26,6 @@ class InfotrygdHttpIntegrasjon(
         val headers = HttpHeaders()
         headers.setBearerAuth(token.accessToken)
 
-        println("Kaller Infotrygd Sykepengeliste")
-        println("$infotrygdRestUrl?fnr=redacted&fraDato=0")
         val response = RestTemplate().exchange(
             "$infotrygdRestUrl?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}",
             HttpMethod.GET,
@@ -35,8 +33,10 @@ class InfotrygdHttpIntegrasjon(
             ITSykepenger::class.java
         )
 
-        return try { response.body.sykemeldingsperiode.asPerioder() } catch (e: HttpMessageNotReadableException) {
-            throw RuntimeException("${e.message} -- ${e.httpInputMessage.bodyAsString()}")
+        return try {
+            response.body.sykemeldingsperiode.asPerioder()
+        } catch (e: HttpMessageNotReadableException) {
+            throw RuntimeException("Klarte ikke parse: ${e.httpInputMessage.bodyAsString()}")
         }
 
     }

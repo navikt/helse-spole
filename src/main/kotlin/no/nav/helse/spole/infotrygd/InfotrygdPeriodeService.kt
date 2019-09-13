@@ -16,7 +16,6 @@ import java.time.LocalDate
 class InfotrygdPeriodeService(val fnrMapper: AktørTilFnrMapper, val infotrygd: InfotrygdIntegrasjon) : PeriodeKilde {
 
     override fun perioder(aktørId: AktørId, fom: LocalDate): Sykepengeperioder {
-        println("henter infotrygd-perioder")
         return Sykepengeperioder(aktørId, infotrygd.forFnr(fnrMapper.tilFnr(aktørId), fom))
     }
 }
