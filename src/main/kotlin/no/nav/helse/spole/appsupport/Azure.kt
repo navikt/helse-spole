@@ -8,6 +8,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 import java.time.LocalDateTime
@@ -51,9 +52,16 @@ class Azure(val objectMapper: ObjectMapper) {
         form.add("grant_type", "client_credentials")
 
         val postEntity = HttpEntity(form, headers)
-        val response = RestTemplate().postForEntity(tokenEndpoint.asURI(), postEntity, String::class.java)
 
-        return objectMapper.readValue(response.body, Token::class.java)
+        try {
+            val response = RestTemplate().postForEntity(tokenEndpoint.asURI(), postEntity, String::class.java)
+
+            return objectMapper.readValue(response.body, Token::class.java)
+        } catch (e: HttpClientErrorException) {
+            println("Klarte ikke hente AzureAD-token")
+            println("${e.message} -- ${e.responseBodyAsString}")
+            throw RuntimeException(e)
+        }
     }
 
 }
