@@ -5,12 +5,11 @@ import no.nav.helse.spole.historikk.Kilde
 import no.nav.helse.spole.historikk.Periode
 import no.nav.helse.spole.infotrygd.fnr.Fodselsnummer
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.http.*
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
+import java.lang.RuntimeException
 import java.net.URI
 import java.time.LocalDate
 
@@ -35,10 +34,15 @@ class InfotrygdHttpIntegrasjon(
             ITSykepenger::class.java
         )
 
-        return response.body.sykemeldingsperiode.asPerioder()
+        return try { response.body.sykemeldingsperiode.asPerioder() } catch (e: HttpMessageNotReadableException) {
+            throw RuntimeException("${e.message} -- ${e.httpInputMessage.bodyAsString()}")
+        }
+
     }
 
 }
+
+private fun HttpInputMessage.bodyAsString(): String = String(this.body.readAllBytes())
 
 private fun List<ITPeriode>.asPerioder(): Collection<Periode> = this.map { it.toPeriode() }
 private fun ITPeriode.toPeriode(): Periode = Periode(this.sykemeldtFom, this.sykemeldtTom, this.grad, Kilde.INFOTRYGD)
