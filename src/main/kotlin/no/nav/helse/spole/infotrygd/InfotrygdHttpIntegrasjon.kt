@@ -25,7 +25,6 @@ class InfotrygdHttpIntegrasjon(
 
         val headers = HttpHeaders()
         headers.setBearerAuth(token.accessToken)
-        headers.accept.add(MediaType.APPLICATION_JSON)
 
         println("Kaller Infotrygd Sykepengeliste")
         val response = RestTemplate().exchange(
