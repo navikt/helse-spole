@@ -19,7 +19,7 @@ infotrygd:
 
 sts:
   username: ${STS_REST_USERNAME:ikke_satt}
-  password: $(STS_REST_PASSWORD:ikke_satt_passord}
+  password: ${STS_REST_PASSWORD:ikke_satt_passord}
   url: ${SECURITY_TOKEN_SERVICE_REST_URL:http://not.a.url}
 
 azure:

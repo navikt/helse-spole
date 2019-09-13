@@ -27,6 +27,7 @@ class InfotrygdHttpIntegrasjon(
         headers.setBearerAuth(token.accessToken)
 
         println("Kaller Infotrygd Sykepengeliste")
+        println("$infotrygdRestUrl?fnr=redacted&fraDato=0")
         val response = RestTemplate().exchange(
             "$infotrygdRestUrl?fnr=$fnr&fraDato=0",
             HttpMethod.GET,
