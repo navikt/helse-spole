@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate
 import java.lang.RuntimeException
 import java.net.URI
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Component
 class InfotrygdHttpIntegrasjon(
@@ -28,7 +29,7 @@ class InfotrygdHttpIntegrasjon(
         println("Kaller Infotrygd Sykepengeliste")
         println("$infotrygdRestUrl?fnr=redacted&fraDato=0")
         val response = RestTemplate().exchange(
-            "$infotrygdRestUrl?fnr=$fnr&fraDato=0",
+            "$infotrygdRestUrl?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}",
             HttpMethod.GET,
             HttpEntity<String>(headers),
             ITSykepenger::class.java
