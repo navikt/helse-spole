@@ -17,7 +17,7 @@ import java.time.LocalDate
 @Component
 class InfotrygdHttpIntegrasjon(
     val azure: Azure,
-    @Value("\$infotrygd.url") val infotrygdRestUrl: String
+    @Value("\${infotrygd.url}") val infotrygdRestUrl: String
 ) : InfotrygdIntegrasjon {
 
     override fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> {
