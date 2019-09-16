@@ -38,7 +38,6 @@ class InfotrygdHttpIntegrasjon(
         } catch (e: HttpMessageNotReadableException) {
             throw RuntimeException("Klarte ikke parse: ${e.httpInputMessage.bodyAsString()}")
         }
-
     }
 
 }
@@ -47,4 +46,3 @@ private fun HttpInputMessage.bodyAsString(): String = String(this.body.readAllBy
 
 private fun List<ITPeriode>.asPerioder(): Collection<Periode> = this.map { it.toPeriode() }
 private fun ITPeriode.toPeriode(): Periode = Periode(this.sykemeldtFom, this.sykemeldtTom, this.grad, Kilde.INFOTRYGD)
-private fun String.asURI() = URI(this)

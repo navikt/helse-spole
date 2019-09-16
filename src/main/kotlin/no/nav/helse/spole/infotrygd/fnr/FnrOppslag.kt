@@ -16,12 +16,8 @@ class FnrOppslag(val stsRestClient: StsRestClient,
                  @Value("\${services.sparkel.url}") val sparkelBaseUrl: String): AktørTilFnrMapper {
 
     override fun tilFnr(aktørId: String): Fodselsnummer {
-        println("Bytter aktørId til fnr")
-        println("Henter STS-Token")
         val bearer = stsRestClient.token()
-        println("STS-Token hentet")
         val webClient = WebClient.builder().baseUrl(sparkelBaseUrl).build()
-        println("Kaller Sparkel for å få fnr")
         return webClient.get()
                 .uri("/api/aktor/$aktørId/fnr")
                 .accept(MediaType.APPLICATION_JSON)
