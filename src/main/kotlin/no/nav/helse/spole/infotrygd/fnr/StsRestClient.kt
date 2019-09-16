@@ -8,6 +8,7 @@ import io.ktor.client.features.auth.Auth
 import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.get
 import io.ktor.client.request.request
 import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
@@ -35,10 +36,8 @@ class StsRestClient(
 
     suspend fun token(): String {
         if (STSToken.shouldRenew(cachedOidcSTSToken)) {
-            cachedOidcSTSToken = client.request<STSToken> {
-                url("$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
-                method = HttpMethod.Get
-            }
+            cachedOidcSTSToken =
+                client.get<STSToken>("$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
         }
         return cachedOidcSTSToken!!.accessToken
     }
