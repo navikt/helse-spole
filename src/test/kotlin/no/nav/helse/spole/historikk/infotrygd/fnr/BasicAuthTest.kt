@@ -20,7 +20,7 @@ import kotlin.test.assertNotNull
 
 class BasicAuthTest {
 
-    val stsClient = StsRestClient(baseUrl = URI("http://localhost"), password = "testPass", username = "testUser")
+    val stsClient = StsRestClient(baseUrl = "http://localhost", password = "testPass", username = "testUser")
 
     @Test
     fun shouldHaveAuthHeaders(): Unit {

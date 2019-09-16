@@ -2,7 +2,6 @@ package no.nav.helse.spole.infotrygd.fnr
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.auth.Auth
@@ -15,30 +14,31 @@ import io.ktor.client.request.url
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import no.nav.helse.spole.JsonConfig
-import java.net.URI
 import java.time.LocalDateTime
 
 class StsRestClient(
-    val baseUrl: URI,
+    val baseUrl: String,
     val username: String,
     val password: String
 ) {
     private var cachedOidcSTSToken: STSToken? = null
 
+    private val client = HttpClient(Apache) {
+        install(JsonFeature) {
+            this.serializer = JacksonSerializer { JsonConfig.objectMapper }
+        }
+        install(Auth) {
+            basic {
+                username = this@StsRestClient.username
+                password = this@StsRestClient.password
+            }
+        }
+    }
+
     suspend fun token(): String {
         if (STSToken.shouldRenew(cachedOidcSTSToken)) {
-            cachedOidcSTSToken = HttpClient(Apache) {
-                install(JsonFeature) {
-                    this.serializer = JacksonSerializer { JsonConfig.objectMapper }
-                }
-                install(Auth) {
-                    basic {
-                        username = this@StsRestClient.username
-                        password = this@StsRestClient.password
-                    }
-                }
-            }.request<STSToken> {
-                url("${baseUrl.toString()}/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
+            cachedOidcSTSToken = client.request<STSToken> {
+                url("$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
                 method = HttpMethod.Get
                 accept(ContentType.Application.Json)
             }

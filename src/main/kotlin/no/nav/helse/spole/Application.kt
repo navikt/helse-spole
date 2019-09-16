@@ -21,7 +21,7 @@ import java.net.URI
 import java.time.LocalDate
 
 object JsonConfig {
-    val objectMapper =
+    val objectMapper: ObjectMapper =
         ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 }
 
@@ -30,7 +30,7 @@ fun Application.spole() {
 
 
     val stsRestClient = StsRestClient(
-        baseUrl = URI(propString("sts.url")),
+        baseUrl = propString("sts.url"),
         password = propString("sts.password"),
         username = propString("sts.username")
     )
