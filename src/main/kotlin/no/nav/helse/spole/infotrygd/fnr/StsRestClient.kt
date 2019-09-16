@@ -8,10 +8,8 @@ import io.ktor.client.features.auth.Auth
 import io.ktor.client.features.auth.providers.basic
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.accept
 import io.ktor.client.request.request
 import io.ktor.client.request.url
-import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import no.nav.helse.spole.JsonConfig
 import java.time.LocalDateTime
@@ -40,7 +38,6 @@ class StsRestClient(
             cachedOidcSTSToken = client.request<STSToken> {
                 url("$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
                 method = HttpMethod.Get
-                accept(ContentType.Application.Json)
             }
         }
         return cachedOidcSTSToken!!.accessToken
