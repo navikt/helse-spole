@@ -20,11 +20,14 @@ import no.nav.helse.spole.spa.SpaPeriodeService
 import java.net.URI
 import java.time.LocalDate
 
+object JsonConfig {
+    val objectMapper =
+        ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+}
+
 @KtorExperimentalAPI
 fun Application.spole() {
 
-    val objectMapper =
-        ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
     val stsRestClient = StsRestClient(
         baseUrl = URI(propString("sts.url")),
@@ -35,7 +38,6 @@ fun Application.spole() {
     val fnrMapper = FnrOppslag(sparkelBaseUrl = URI(propString("sparkel.url")), sts = stsRestClient)
 
     val azure = Azure(
-        objectMapper = objectMapper,
         clientId = propString("azure.client.id"),
         clientSecret = propString("azure.client.secret"),
         scope = propString("azure.scope"),

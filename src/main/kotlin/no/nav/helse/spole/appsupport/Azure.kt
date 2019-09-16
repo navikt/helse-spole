@@ -9,11 +9,11 @@ import io.ktor.client.request.forms.formData
 import io.ktor.client.request.request
 import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
+import no.nav.helse.spole.JsonConfig
 import java.net.URI
 import java.time.LocalDateTime
 
 class Azure(
-    val objectMapper: ObjectMapper,
     val clientId: String,
     val clientSecret: String,
     val scope: String,
@@ -22,7 +22,7 @@ class Azure(
 
     private var client = HttpClient(Apache) {
         install(JsonFeature) {
-            this.serializer = JacksonSerializer { objectMapper }
+            this.serializer = JacksonSerializer { JsonConfig.objectMapper }
         }
     }
 

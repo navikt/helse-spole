@@ -2,13 +2,19 @@ package no.nav.helse.spole.infotrygd.fnr
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.auth.Auth
 import io.ktor.client.features.auth.providers.basic
+import io.ktor.client.features.json.JacksonSerializer
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.accept
 import io.ktor.client.request.request
 import io.ktor.client.request.url
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
+import no.nav.helse.spole.JsonConfig
 import java.net.URI
 import java.time.LocalDateTime
 
@@ -17,27 +23,31 @@ class StsRestClient(
     val username: String,
     val password: String
 ) {
-    private var cachedOidcToken: Token? = null
+    private var cachedOidcSTSToken: STSToken? = null
 
     suspend fun token(): String {
-        if (Token.shouldRenew(cachedOidcToken)) {
-            cachedOidcToken = HttpClient(Apache) {
+        if (STSToken.shouldRenew(cachedOidcSTSToken)) {
+            cachedOidcSTSToken = HttpClient(Apache) {
+                install(JsonFeature) {
+                    this.serializer = JacksonSerializer { JsonConfig.objectMapper }
+                }
                 install(Auth) {
                     basic {
                         username = this@StsRestClient.username
                         password = this@StsRestClient.password
                     }
                 }
-            }.request<Token> {
+            }.request<STSToken> {
                 url("${baseUrl.toString()}/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
                 method = HttpMethod.Get
+                accept(ContentType.Application.Json)
             }
         }
-        return cachedOidcToken!!.accessToken
+        return cachedOidcSTSToken!!.accessToken
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private data class Token(
+    data class STSToken(
         @JsonProperty("access_token") val accessToken: String, @JsonProperty("token_type") val type: String, @JsonProperty(
             "expires_in"
         ) val expiresIn: Int
@@ -46,16 +56,16 @@ class StsRestClient(
         val expirationTime: LocalDateTime = LocalDateTime.now().plusSeconds(expiresIn - 10L)
 
         companion object {
-            fun shouldRenew(token: Token?): Boolean {
-                if (token == null) {
+            fun shouldRenew(STSToken: STSToken?): Boolean {
+                if (STSToken == null) {
                     return true
                 }
 
-                return isExpired(token)
+                return isExpired(STSToken)
             }
 
-            fun isExpired(token: Token): Boolean {
-                return token.expirationTime.isBefore(LocalDateTime.now())
+            fun isExpired(STSToken: STSToken): Boolean {
+                return STSToken.expirationTime.isBefore(LocalDateTime.now())
             }
         }
     }
