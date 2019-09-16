@@ -2,16 +2,9 @@ package no.nav.helse.spole.infotrygd.fnr
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.auth.Auth
-import io.ktor.client.features.auth.providers.basic
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.get
-import io.ktor.client.request.request
-import io.ktor.client.request.url
-import io.ktor.http.HttpMethod
+import com.github.kittinunf.fuel.core.extensions.authenticate
+import com.github.kittinunf.fuel.core.extensions.authentication
+import com.github.kittinunf.fuel.httpGet
 import no.nav.helse.spole.JsonConfig
 import java.time.LocalDateTime
 
@@ -22,22 +15,16 @@ class StsRestClient(
 ) {
     private var cachedOidcSTSToken: STSToken? = null
 
-    private val client = HttpClient(Apache) {
-        install(JsonFeature) {
-            this.serializer = JacksonSerializer { JsonConfig.objectMapper }
-        }
-        install(Auth) {
-            basic {
-                username = this@StsRestClient.username
-                password = this@StsRestClient.password
-            }
-        }
-    }
-
-    suspend fun token(): String {
+    fun token(): String {
         if (STSToken.shouldRenew(cachedOidcSTSToken)) {
+            val (_, _, result) = "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid".httpGet()
+                .authentication()
+                .basic(username, password)
+                .header(mapOf("Accept" to "application/json"))
+                .response()
+
             cachedOidcSTSToken =
-                client.get<STSToken>("$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
+                JsonConfig.objectMapper.readValue(result.get(), STSToken::class.java)
         }
         return cachedOidcSTSToken!!.accessToken
     }
