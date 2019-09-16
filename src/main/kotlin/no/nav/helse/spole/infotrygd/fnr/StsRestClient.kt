@@ -12,23 +12,24 @@ import io.ktor.http.HttpMethod
 import java.net.URI
 import java.time.LocalDateTime
 
-class StsRestClient(val stsRestUrl: URI,
-                    val stsRestUsername: String,
-                    val stsRestPassword: String) {
+class StsRestClient(
+    val baseUrl: URI,
+    val username: String,
+    val password: String
+) {
     private var cachedOidcToken: Token? = null
-    private val client = HttpClient(Apache) {
-        install(Auth) {
-            basic {
-                username = stsRestUsername
-                password = stsRestPassword
-            }
-        }
-    }
 
     suspend fun token(): String {
-        if (Token.shouldRenew(cachedOidcToken))  {
-            cachedOidcToken = client.request<Token> {
-                url("${stsRestUrl.toString()}/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
+        if (Token.shouldRenew(cachedOidcToken)) {
+            cachedOidcToken = HttpClient(Apache) {
+                install(Auth) {
+                    basic {
+                        username = this@StsRestClient.username
+                        password = this@StsRestClient.password
+                    }
+                }
+            }.request<Token> {
+                url("${baseUrl.toString()}/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
                 method = HttpMethod.Get
             }
         }
@@ -36,7 +37,11 @@ class StsRestClient(val stsRestUrl: URI,
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private data class Token(@JsonProperty("access_token") val accessToken: String, @JsonProperty("token_type") val type: String, @JsonProperty("expires_in") val expiresIn: Int) {
+    private data class Token(
+        @JsonProperty("access_token") val accessToken: String, @JsonProperty("token_type") val type: String, @JsonProperty(
+            "expires_in"
+        ) val expiresIn: Int
+    ) {
         // expire 10 seconds before actual expiry. for great margins.
         val expirationTime: LocalDateTime = LocalDateTime.now().plusSeconds(expiresIn - 10L)
 

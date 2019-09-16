@@ -27,9 +27,9 @@ fun Application.spole() {
         ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
     val stsRestClient = StsRestClient(
-        stsRestUrl = URI(propString("sts.url")),
-        stsRestPassword = propString("sts.password"),
-        stsRestUsername = propString("sts.username")
+        baseUrl = URI(propString("sts.url")),
+        password = propString("sts.password"),
+        username = propString("sts.username")
     )
 
     val fnrMapper = FnrOppslag(sparkelBaseUrl = URI(propString("sparkel.url")), sts = stsRestClient)
