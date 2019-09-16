@@ -1,39 +1,31 @@
 package no.nav.helse.spole.infotrygd.fnr
 
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.request.header
+import io.ktor.client.request.request
+import io.ktor.client.request.url
 import no.nav.helse.spole.infotrygd.AktørTilFnrMapper
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
-import org.springframework.http.MediaType
-import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.WebClient
+import java.net.URI
 import java.util.*
 
-@Component
-@Profile(value=["preprod", "prod"])
-class FnrOppslag(val stsRestClient: StsRestClient,
-                 @Value("\${services.sparkel.url}") val sparkelBaseUrl: String): AktørTilFnrMapper {
+class FnrOppslag(
+    val sts: StsRestClient,
+    val sparkelBaseUrl: URI
+) : AktørTilFnrMapper {
 
-    override fun tilFnr(aktørId: String): Fodselsnummer {
-        val bearer = stsRestClient.token()
-        val webClient = WebClient.builder().baseUrl(sparkelBaseUrl).build()
-        return webClient.get()
-                .uri("/api/aktor/$aktørId/fnr")
-                .accept(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer $bearer")
-                .header("Nav-Call-Id", UUID.randomUUID().toString())
-                .header("Nav-Consumer-Id", "spenn")
-                .retrieve()
-                .bodyToMono(Fodselsnummer::class.java).block()!!
+    private val client = HttpClient(Apache)
+
+    override suspend fun tilFnr(aktørId: String): Fodselsnummer = client.request<Fodselsnummer> {
+        url("${sparkelBaseUrl.toString()}/api/aktor/${aktørId}/fnr")
+        headers["Authorization"] = "Bearer ${sts.token()}"
+        headers["Nav-Call-Id"] = UUID.randomUUID().toString()
+        headers["Nav-Consumer-Id"] = UUID.randomUUID().toString()
     }
-
 }
 
-@Component
-@Profile(value=["test", "default", "integration"])
 class DummyAktørMapper() : AktørTilFnrMapper {
-    override fun tilFnr(aktørId: String): Fodselsnummer = aktørId
+    override suspend fun tilFnr(aktørId: String): Fodselsnummer = aktørId
 }
 
 typealias Fodselsnummer = String

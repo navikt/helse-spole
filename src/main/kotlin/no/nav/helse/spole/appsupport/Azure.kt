@@ -1,37 +1,36 @@
 package no.nav.helse.spole.appsupport
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
-import org.springframework.stereotype.Component
-import org.springframework.util.LinkedMultiValueMap
-import org.springframework.util.MultiValueMap
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.RestTemplate
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.json.JacksonSerializer
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.forms.formData
+import io.ktor.client.request.request
+import io.ktor.client.request.url
+import io.ktor.http.HttpMethod
 import java.net.URI
 import java.time.LocalDateTime
 
-@Component
-class Azure(val objectMapper: ObjectMapper) {
+class Azure(
+    val objectMapper: ObjectMapper,
+    val clientId: String,
+    val clientSecret: String,
+    val scope: String,
+    val endpoint: URI
+) {
 
-    @Value("\${azure.client.id}")
-    lateinit var clientId: String
+    private var client = HttpClient(Apache) {
+        install(JsonFeature) {
+            this.serializer = JacksonSerializer { objectMapper }
+        }
+    }
 
-    @Value("\${azure.client.secret}")
-    lateinit var clientSecret: String
-
-    @Value("\${azure.scope}")
-    lateinit var scope: String
-
-    @Value("\${azure.url}")
-    lateinit var tokenEndpoint: String
-
-    private var token: Token = Token(tokenType = "not a token", expiresIn = 0, extExpiresIn = 0, accessToken = "not a token")
+    private var token: Token =
+        Token(tokenType = "not a token", expiresIn = 0, extExpiresIn = 0, accessToken = "not a token")
     private var expiry: LocalDateTime = LocalDateTime.now().minusYears(100)
 
-    fun hentToken(): Token {
+    suspend fun hentToken(): Token {
         if (isExpired()) {
             token = fetchTokenFromAzure()
             expiry = LocalDateTime.now().plusSeconds(token.expiresIn).minusSeconds(60)
@@ -41,30 +40,17 @@ class Azure(val objectMapper: ObjectMapper) {
 
     private fun isExpired(): Boolean = LocalDateTime.now().isAfter(expiry)
 
-    private fun fetchTokenFromAzure(): Token {
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
-
-        val form: MultiValueMap<String, String> = LinkedMultiValueMap()
-        form.add("client_id", clientId)
-        form.add("client_secret", clientSecret)
-        form.add("scope", scope)
-        form.add("grant_type", "client_credentials")
-
-        val postEntity = HttpEntity(form, headers)
-
-        try {
-            val response = RestTemplate().postForEntity(tokenEndpoint.asURI(), postEntity, String::class.java)
-
-            return objectMapper.readValue(response.body, Token::class.java)
-        } catch (e: HttpClientErrorException) {
-            println("Klarte ikke hente AzureAD-token")
-            println("${e.message} -- ${e.responseBodyAsString}")
-            throw RuntimeException(e)
+    private suspend fun fetchTokenFromAzure(): Token = client.request {
+        url(endpoint.toString())
+        method = HttpMethod.Post
+        headers["ContentType"] = "application/x-www-form-urlencoded"
+        formData {
+            append("client_id", clientId)
+            append("client_secret", clientSecret)
+            append("scope", scope)
+            append("grant_type", "client_credentials")
         }
     }
-
 }
 
 data class Token(val tokenType: String, val expiresIn: Long, val extExpiresIn: Long, val accessToken: String)
-private fun String.asURI() = URI(this)

@@ -2,29 +2,35 @@ package no.nav.helse.spole.infotrygd.fnr
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.MediaType
-import org.springframework.stereotype.Component
-import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
-import org.springframework.web.reactive.function.client.WebClient
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.auth.Auth
+import io.ktor.client.features.auth.providers.basic
+import io.ktor.client.request.request
+import io.ktor.client.request.url
+import io.ktor.http.HttpMethod
+import java.net.URI
 import java.time.LocalDateTime
 
-@Component
-class StsRestClient(@Value("\${sts.url}") val stsRestUrl: String,
-                    @Value("\${sts.username}") val stsRestUsername: String,
-                    @Value("\${sts.password}") val stsRestPassword: String) {
+class StsRestClient(val stsRestUrl: URI,
+                    val stsRestUsername: String,
+                    val stsRestPassword: String) {
     private var cachedOidcToken: Token? = null
+    private val client = HttpClient(Apache) {
+        install(Auth) {
+            basic {
+                username = stsRestUsername
+                password = stsRestPassword
+            }
+        }
+    }
 
-    fun token(): String {
+    suspend fun token(): String {
         if (Token.shouldRenew(cachedOidcToken))  {
-           val webClient = WebClient.builder().baseUrl(stsRestUrl)
-                   .filter(ExchangeFilterFunctions.basicAuthentication(stsRestUsername, stsRestPassword))
-                   .build()
-            cachedOidcToken = webClient.get().uri("/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .retrieve()
-                    .bodyToMono(Token::class.java)
-                    .block()
+            cachedOidcToken = client.request<Token> {
+                url("${stsRestUrl.toString()}/rest/v1/sts/token?grant_type=client_credentials&scope=openid")
+                method = HttpMethod.Get
+            }
         }
         return cachedOidcToken!!.accessToken
     }
