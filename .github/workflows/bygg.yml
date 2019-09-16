@@ -16,7 +16,9 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.11
-    - name: Build with Maven
+    - name: Kompiler
+      run: mvn test-compile --file pom.xml
+    - name: Snekre sammen en jar
       run: mvn package --file pom.xml
     - name: Snekre sammen et image
       run: |
