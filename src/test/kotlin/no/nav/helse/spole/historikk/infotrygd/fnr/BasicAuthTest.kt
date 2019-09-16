@@ -20,7 +20,7 @@ import kotlin.test.assertNotNull
 
 class BasicAuthTest {
 
-    val stsClient = StsRestClient(baseUrl = "http://localhost", password = "testPass", username = "testUser")
+    val stsClient = StsRestClient(baseUrl = "http://localhost:51123", password = "testPass", username = "testUser")
 
     @Test
     fun shouldHaveAuthHeaders(): Unit {
@@ -32,7 +32,7 @@ class BasicAuthTest {
     }
 
     fun runServerAndCheckCredentials() {
-        embeddedServer(Netty, 80) {
+        embeddedServer(Netty, 51123) {
             install(Authentication) {
                 basic("aname") {
                     realm = "somerealm"
