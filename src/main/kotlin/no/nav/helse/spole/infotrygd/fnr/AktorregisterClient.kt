@@ -10,7 +10,7 @@ import no.nav.helse.spole.infotrygd.AktørTilFnrMapper
 import java.lang.RuntimeException
 import java.net.URI
 
-class AktørregisterClient(
+class AktorregisterClient(
     val sts: StsRestClient,
     val aktørregisterUrl: URI
 ) : AktørTilFnrMapper {

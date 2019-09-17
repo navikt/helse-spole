@@ -6,7 +6,7 @@ import java.lang.RuntimeException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class AktørregisterContentParseTest {
+class AktorregisterContentParseTest {
 
     @Test
     fun `skal klare å hente ut Norsk Ident fra en én til én response`() {

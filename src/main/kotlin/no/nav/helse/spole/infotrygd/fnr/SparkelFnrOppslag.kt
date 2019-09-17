@@ -9,7 +9,7 @@ import no.nav.helse.spole.infotrygd.AktørTilFnrMapper
 import java.net.URI
 import java.util.*
 
-class FnrOppslag(
+class SparkelFnrOppslag(
     val sts: StsRestClient,
     val sparkelBaseUrl: URI
 ) : AktørTilFnrMapper {
