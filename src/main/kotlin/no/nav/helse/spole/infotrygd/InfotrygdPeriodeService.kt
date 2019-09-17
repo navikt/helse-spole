@@ -1,10 +1,10 @@
 package no.nav.helse.spole.infotrygd
 
+import no.nav.helse.spole.Fodselsnummer
 import no.nav.helse.spole.historikk.AktørId
 import no.nav.helse.spole.historikk.Periode
 import no.nav.helse.spole.historikk.PeriodeKilde
 import no.nav.helse.spole.historikk.Sykepengeperioder
-import no.nav.helse.spole.infotrygd.fnr.Fodselsnummer
 import java.time.LocalDate
 
 class InfotrygdPeriodeService(val fnrMapper: AktørTilFnrMapper, val infotrygd: InfotrygdIntegrasjon) : PeriodeKilde {

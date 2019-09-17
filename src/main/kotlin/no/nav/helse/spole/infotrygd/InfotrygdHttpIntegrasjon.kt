@@ -5,10 +5,10 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.request
 import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
+import no.nav.helse.spole.Fodselsnummer
 import no.nav.helse.spole.appsupport.Azure
 import no.nav.helse.spole.historikk.Kilde
 import no.nav.helse.spole.historikk.Periode
-import no.nav.helse.spole.infotrygd.fnr.Fodselsnummer
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

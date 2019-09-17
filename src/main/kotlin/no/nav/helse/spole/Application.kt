@@ -15,7 +15,6 @@ import no.nav.helse.spole.historikk.HistorikkController
 import no.nav.helse.spole.infotrygd.InfotrygdHttpIntegrasjon
 import no.nav.helse.spole.infotrygd.InfotrygdPeriodeService
 import no.nav.helse.spole.infotrygd.fnr.AktorregisterClient
-import no.nav.helse.spole.infotrygd.fnr.SparkelFnrOppslag
 import no.nav.helse.spole.infotrygd.fnr.StsRestClient
 import no.nav.helse.spole.spa.SpaPeriodeService
 import java.net.URI
@@ -69,3 +68,5 @@ fun Application.spole() {
 fun Application.propString(path: String): String = this.environment.config.property(path).getString()
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+
+typealias Fodselsnummer = String

@@ -32,7 +32,7 @@ class SmokeTest {
         put("sts.password", "so_secret")
         put("sts.username", "so_secret_username")
 
-        put("sparkel.url", "http://ikke.satt")
+        put("fnrkilde.url", "http://ikke.satt")
 
         put("azure.client.id", "client")
         put("azure.client.secret", "secret")

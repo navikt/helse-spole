@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.httpGet
+import no.nav.helse.spole.Fodselsnummer
 import no.nav.helse.spole.JsonConfig
 import no.nav.helse.spole.infotrygd.AktørTilFnrMapper
 import java.lang.RuntimeException
