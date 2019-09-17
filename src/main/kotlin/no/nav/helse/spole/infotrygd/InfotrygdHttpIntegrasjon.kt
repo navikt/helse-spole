@@ -1,11 +1,10 @@
 package no.nav.helse.spole.infotrygd
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.request.request
-import io.ktor.client.request.url
-import io.ktor.http.HttpMethod
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.core.extensions.authentication
+import com.github.kittinunf.fuel.httpGet
 import no.nav.helse.spole.Fodselsnummer
+import no.nav.helse.spole.JsonConfig
 import no.nav.helse.spole.appsupport.Azure
 import no.nav.helse.spole.historikk.Kilde
 import no.nav.helse.spole.historikk.Periode
@@ -18,15 +17,17 @@ class InfotrygdHttpIntegrasjon(
     val infotrygdRestUrl: URI
 ) : InfotrygdIntegrasjon {
 
-    private val client = HttpClient(Apache)
-
     override suspend fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> {
         println("henter sykepengeperioder fra infotrygd")
-        return client.request<ITSykepenger> {
-            url("${infotrygdRestUrl.toString()}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}")
-            this.headers["Authorization"] = "Bearer ${azure.hentToken().accessToken}"
-            this.method = HttpMethod.Get
-        }.sykemeldingsperiode.asPerioder()
+        val token = azure.hentToken().accessToken
+        val (_, _, result) = "${infotrygdRestUrl.toString()}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}"
+            .httpGet()
+            .authentication()
+            .bearer(token)
+            .response()
+
+        val sykepenger: ITSykepenger = JsonConfig.objectMapper.readValue(result.get())
+        return sykepenger.sykemeldingsperiode.asPerioder()
     }
 }
 

@@ -1,13 +1,7 @@
 package no.nav.helse.spole.appsupport
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.forms.formData
-import io.ktor.client.request.request
-import io.ktor.client.request.url
-import io.ktor.http.HttpMethod
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.httpPost
 import no.nav.helse.spole.JsonConfig
 import java.net.URI
 import java.time.LocalDateTime
@@ -18,18 +12,11 @@ class Azure(
     val scope: String,
     val endpoint: URI
 ) {
-
-    private var client = HttpClient(Apache) {
-        install(JsonFeature) {
-            this.serializer = JacksonSerializer { JsonConfig.objectMapper }
-        }
-    }
-
     private var token: Token =
         Token(tokenType = "not a token", expiresIn = 0, extExpiresIn = 0, accessToken = "not a token")
     private var expiry: LocalDateTime = LocalDateTime.now().minusYears(100)
 
-    suspend fun hentToken(): Token {
+    fun hentToken(): Token {
         println("henter azure ad token")
         if (isExpired()) {
             println("autentiserer mot azure ad")
@@ -42,16 +29,16 @@ class Azure(
 
     private fun isExpired(): Boolean = LocalDateTime.now().isAfter(expiry)
 
-    private suspend fun fetchTokenFromAzure(): Token = client.request {
-        url(endpoint.toString())
-        method = HttpMethod.Post
-        headers["ContentType"] = "application/x-www-form-urlencoded"
-        formData {
-            append("client_id", clientId)
-            append("client_secret", clientSecret)
-            append("scope", scope)
-            append("grant_type", "client_credentials")
-        }
+    private fun fetchTokenFromAzure(): Token {
+        val (_, _, result) = endpoint.toString().httpPost(
+            listOf(
+                "client_id" to clientId,
+                "client_secret" to clientSecret,
+                "scope" to scope,
+                "grant_type" to "client_credentials"
+            )
+        ).response()
+        return JsonConfig.objectMapper.readValue(result.get())
     }
 }
 
