@@ -28,7 +28,6 @@ object JsonConfig {
 @KtorExperimentalAPI
 fun Application.spole() {
 
-
     val stsRestClient = StsRestClient(
         baseUrl = propString("sts.url"),
         password = propString("sts.password"),

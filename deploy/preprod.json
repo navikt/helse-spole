@@ -58,6 +58,10 @@
       {
         "name": "INFOTRYGD_SYKEPENGER_URL",
         "value": "https://infotrygd-sykepenger.nais.preprod.local/v1/hentSykepengerListe"
+      },
+      {
+        "name": "AZURE_TOKEN_ENDPOINT",
+        "value": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token"
       }
     ]
   }
