@@ -5,11 +5,12 @@ import java.time.LocalDate
 class HistorikkController(val infotrygd: PeriodeKilde,
                           val spa: PeriodeKilde) {
 
-    //@GetMapping("/sykepengeperioder/{aktørId}")
     suspend fun hentPerioder(aktørId: AktørId,
                      fom: LocalDate?): Sykepengeperioder {
         val faktiskFom = fom ?: LocalDate.now().minusYears(3)
-        return infotrygdPerioder(aktørId, faktiskFom).join(spaPerioder(aktørId, faktiskFom))
+        val res = infotrygdPerioder(aktørId, faktiskFom).join(spaPerioder(aktørId, faktiskFom))
+        println("hentet sykepengeperioder fra alle kilder")
+        return res
     }
 
     private suspend fun infotrygdPerioder(aktørId: AktørId, fom: LocalDate) = infotrygd.perioder(aktørId, fom)

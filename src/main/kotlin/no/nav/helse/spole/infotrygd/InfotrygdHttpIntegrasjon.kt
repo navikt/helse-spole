@@ -20,12 +20,14 @@ class InfotrygdHttpIntegrasjon(
 
     private val client = HttpClient(Apache)
 
-    override suspend fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> =
-        client.request<ITSykepenger> {
+    override suspend fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> {
+        println("henter sykepengeperioder fra infotrygd")
+        return client.request<ITSykepenger> {
             url("${infotrygdRestUrl.toString()}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}")
             this.headers["Authorization"] = "Bearer ${azure.hentToken().accessToken}"
             this.method = HttpMethod.Get
         }.sykemeldingsperiode.asPerioder()
+    }
 }
 
 private fun List<ITPeriode>.asPerioder(): Collection<Periode> = this.map { it.toPeriode() }

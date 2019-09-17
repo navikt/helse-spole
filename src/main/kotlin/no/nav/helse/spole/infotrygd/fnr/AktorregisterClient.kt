@@ -16,7 +16,9 @@ class AktorregisterClient(
     val aktørregisterUrl: URI
 ) : AktørTilFnrMapper {
     override suspend fun tilFnr(aktørId: String): Fodselsnummer {
+        println("henter sts-token for fnr-oppslag")
         val token = sts.token()
+        println("henter fødselsnummer")
         val (_, _, result) = "$aktørregisterUrl/api/v1/identer?gjeldende=true".httpGet()
             .authentication()
             .bearer(token)
@@ -29,6 +31,7 @@ class AktorregisterClient(
                 )
             )
             .responseString()
+        println("parser fødselsnummer")
         return result.get().foedselsnummerFraAktørregisterResponse()
     }
 
