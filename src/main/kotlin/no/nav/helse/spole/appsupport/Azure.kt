@@ -10,7 +10,7 @@ class Azure(
     val clientId: String,
     val clientSecret: String,
     val scope: String,
-    val endpoint: URI
+    val tenantId: String
 ) {
     private var token: Token =
         Token(tokenType = "not a token", expiresIn = 0, extExpiresIn = 0, accessToken = "not a token")
@@ -30,7 +30,7 @@ class Azure(
     private fun isExpired(): Boolean = LocalDateTime.now().isAfter(expiry)
 
     private fun fetchTokenFromAzure(): Token {
-        val (_, _, result) = endpoint.toString().httpPost(
+        val (_, _, result) = "https://login.microsoftonline.com/$tenantId/oauth2/v2.0/token".httpPost(
             listOf(
                 "client_id" to clientId,
                 "client_secret" to clientSecret,

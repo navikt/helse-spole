@@ -43,7 +43,7 @@ class SmokeTest {
         put("azure.client.id", "client")
         put("azure.client.secret", "secret")
         put("azure.scope", "who_knows")
-        put("azure.url", "http://ikke.satt")
+        put("azure.tenant.id", "some_long_string")
 
         put("infotrygd.url", "http://ikke.satt")
     }

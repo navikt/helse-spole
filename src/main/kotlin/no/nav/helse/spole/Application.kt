@@ -62,7 +62,7 @@ fun Application.spole() {
         clientId = propString("azure.client.id"),
         clientSecret = propString("azure.client.secret"),
         scope = propString("azure.scope"),
-        endpoint = URI(propString("azure.url"))
+        tenantId = propString("azure.tenant.id")
     )
 
     val infotrygd = InfotrygdHttpIntegrasjon(azure = azure, infotrygdRestUrl = URI(propString("infotrygd.url")))
@@ -87,7 +87,6 @@ fun Application.spole() {
         }
     }
 }
-
 
 @KtorExperimentalAPI
 fun Application.propString(path: String): String = this.environment.config.property(path).getString()
