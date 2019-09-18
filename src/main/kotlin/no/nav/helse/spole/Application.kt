@@ -69,7 +69,7 @@ fun Application.spole() {
         }
         get("/sykepengeperioder/{aktorId}") {
             val perioder = historikkController.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
-            call.respond(HttpStatusCode.OK, perioder)
+            call.respond(HttpStatusCode.OK, JsonConfig.objectMapper.writeValueAsBytes(perioder))
         }
     }
 }
