@@ -4,12 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.response.respondText
+import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.exporter.common.TextFormat
 import no.nav.helse.spole.appsupport.Azure
 import no.nav.helse.spole.historikk.HistorikkController
 import no.nav.helse.spole.infotrygd.InfotrygdHttpIntegrasjon
@@ -19,6 +23,7 @@ import no.nav.helse.spole.infotrygd.fnr.StsRestClient
 import no.nav.helse.spole.spa.SpaPeriodeService
 import java.net.URI
 import java.time.LocalDate
+import java.util.*
 
 object JsonConfig {
     val objectMapper: ObjectMapper =
@@ -55,6 +60,12 @@ fun Application.spole() {
         }
         get("/isready") {
             call.respondText { "READY" }
+        }
+        get("/internal/metrics") {
+            val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: Collections.emptySet()
+            call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
+                TextFormat.write004(this,  CollectorRegistry.defaultRegistry.filteredMetricFamilySamples(names))
+            }
         }
         get("/sykepengeperioder/{aktorId}") {
             val perioder = historikkController.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))

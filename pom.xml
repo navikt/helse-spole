@@ -16,6 +16,7 @@
         <kotlin.code.style>official</kotlin.code.style>
         <ktor.version>1.2.4</ktor.version>
         <fuel.version>1.15.1</fuel.version>
+        <prometheus.version>0.6.0</prometheus.version>
         <junit.version>4.12</junit.version>
     </properties>
 
@@ -55,6 +56,17 @@
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-netty</artifactId>
             <version>${ktor.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_common</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_hotspot</artifactId>
+            <version>${prometheus.version}</version>
         </dependency>
 
         <dependency>

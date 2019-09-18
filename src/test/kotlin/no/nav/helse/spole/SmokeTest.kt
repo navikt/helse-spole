@@ -3,6 +3,7 @@ package no.nav.helse.spole
 import io.ktor.application.Application
 import io.ktor.config.MapApplicationConfig
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.ktor.util.KtorExperimentalAPI
@@ -19,10 +20,15 @@ class SmokeTest {
         spole()
     }) {
         with(handleRequest(HttpMethod.Get, "/isalive")) {
-            assertEquals("ALIVE", response.content)
+            assertEquals(HttpStatusCode.OK, response.status(), "Skal eksponere metrikker")
+            assertEquals("ALIVE", response.content, "Skal ha et svar på `isalive`")
         }
         with(handleRequest(HttpMethod.Get, "/isready")) {
-            assertEquals("READY", response.content)
+            assertEquals(HttpStatusCode.OK, response.status(), "Skal eksponere metrikker")
+            assertEquals("READY", response.content, "Skal ha et svar på `isready`")
+        }
+        with(handleRequest (HttpMethod.Get, "/internal/metrics") ){
+            assertEquals(HttpStatusCode.OK, response.status(), "Skal eksponere metrikker")
         }
     }
 
