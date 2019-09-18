@@ -27,7 +27,7 @@ class InfotrygdHttpIntegrasjon(
             .response()
 
         val sykepenger: ITSykepenger = JsonConfig.objectMapper.readValue(result.get())
-        return sykepenger.sykemeldingsperiode.asPerioder()
+        return sykepenger.sykmeldingsperioder.asPerioder()
     }
 }
 
