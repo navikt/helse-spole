@@ -57,6 +57,16 @@
             <artifactId>ktor-server-netty</artifactId>
             <version>${ktor.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-metrics-micrometer</artifactId>
+            <version>${ktor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.2.1</version>
+        </dependency>
 
         <dependency>
             <groupId>io.prometheus</groupId>

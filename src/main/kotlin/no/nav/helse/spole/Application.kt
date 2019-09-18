@@ -4,15 +4,26 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.application.feature
+import io.ktor.application.install
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.Counter
+import io.prometheus.client.Histogram
 import io.prometheus.client.exporter.common.TextFormat
 import no.nav.helse.spole.appsupport.Azure
 import no.nav.helse.spole.historikk.HistorikkController
@@ -25,6 +36,7 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.*
 
+
 object JsonConfig {
     val objectMapper: ObjectMapper =
         ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
@@ -32,6 +44,11 @@ object JsonConfig {
 
 @KtorExperimentalAPI
 fun Application.spole() {
+
+    val collectorRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    install(MicrometerMetrics) {
+        registry = collectorRegistry
+    }
 
     val stsRestClient = StsRestClient(
         baseUrl = propString("sts.url"),
@@ -61,18 +78,16 @@ fun Application.spole() {
         get("/isready") {
             call.respondText { "READY" }
         }
-        get("/internal/metrics") {
-            val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: Collections.emptySet()
-            call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
-                TextFormat.write004(this,  CollectorRegistry.defaultRegistry.filteredMetricFamilySamples(names))
-            }
-        }
         get("/sykepengeperioder/{aktorId}") {
             val perioder = historikkController.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
             call.respond(HttpStatusCode.OK, JsonConfig.objectMapper.writeValueAsBytes(perioder))
         }
+        get("/internal/metrics") {
+            call.respondText(collectorRegistry.scrape())
+        }
     }
 }
+
 
 @KtorExperimentalAPI
 fun Application.propString(path: String): String = this.environment.config.property(path).getString()
