@@ -1,30 +1,24 @@
 package no.nav.helse.spole
 
+import com.auth0.jwk.UrlJwkProvider
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import io.ktor.application.Application
 import io.ktor.application.call
-import io.ktor.application.feature
 import io.ktor.application.install
-import io.ktor.http.ContentType
+import io.ktor.auth.Authentication
+import io.ktor.auth.authenticate
+import io.ktor.auth.jwt.JWTPrincipal
+import io.ktor.auth.jwt.jwt
 import io.ktor.http.HttpStatusCode
 import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.response.respond
 import io.ktor.response.respondText
-import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
-import io.micrometer.core.instrument.MeterRegistry
-import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
-import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
-import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
-import io.prometheus.client.CollectorRegistry
-import io.prometheus.client.Counter
-import io.prometheus.client.Histogram
-import io.prometheus.client.exporter.common.TextFormat
 import no.nav.helse.spole.appsupport.Azure
 import no.nav.helse.spole.historikk.HistorikkController
 import no.nav.helse.spole.infotrygd.InfotrygdHttpIntegrasjon
@@ -33,8 +27,8 @@ import no.nav.helse.spole.infotrygd.fnr.AktorregisterClient
 import no.nav.helse.spole.infotrygd.fnr.StsRestClient
 import no.nav.helse.spole.spa.SpaPeriodeService
 import java.net.URI
+import java.net.URL
 import java.time.LocalDate
-import java.util.*
 
 
 object JsonConfig {
@@ -71,17 +65,37 @@ fun Application.spole() {
     val spaKilde = SpaPeriodeService()
     val historikkController = HistorikkController(infotrygd = infotrygdKilde, spa = spaKilde)
 
+    val jwtKeys = "https://login.microsoftonline.com/${propString("azure.tenant.id")}/discovery/v2.0/keys"
+    val jwtIssuer = "https://sts.windows.net/${propString("azure.tenant.id")}/"
+    val jwtAudience = environment.config.property("jwt.audience").getString()
+    val jwtRealm = environment.config.property("jwt.realm").getString()
+
+    install(Authentication) {
+        jwt("jwt") {
+            realm = jwtRealm
+            verifier(UrlJwkProvider(URL(jwtKeys)), jwtIssuer)
+            validate { credential ->
+                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
+            }
+        }
+    }
+
+
     routing {
+        authenticate("jwt") {
+            get("/sykepengeperioder/{aktorId}") {
+                val perioder =
+                    historikkController.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
+                call.respond(HttpStatusCode.OK, JsonConfig.objectMapper.writeValueAsBytes(perioder))
+            }
+        }
         get("/isalive") {
             call.respondText { "ALIVE" }
         }
         get("/isready") {
             call.respondText { "READY" }
         }
-        get("/sykepengeperioder/{aktorId}") {
-            val perioder = historikkController.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
-            call.respond(HttpStatusCode.OK, JsonConfig.objectMapper.writeValueAsBytes(perioder))
-        }
+
         get("/internal/metrics") {
             call.respondText(collectorRegistry.scrape())
         }
