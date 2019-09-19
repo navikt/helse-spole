@@ -15,7 +15,7 @@ class AktorregisterClient(
     val sts: StsRestClient,
     val aktørregisterUrl: URI
 ) : AktørTilFnrMapper {
-    override suspend fun tilFnr(aktørId: String): Fodselsnummer {
+    override fun tilFnr(aktørId: String): Fodselsnummer {
         println("henter sts-token for fnr-oppslag")
         val token = sts.token()
         println("henter fødselsnummer")
