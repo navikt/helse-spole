@@ -59,7 +59,9 @@ fun Application.spole() {
         tenantId = propString("azure.tenant.id")
     )
 
-    val infotrygd = InfotrygdHttpIntegrasjon(azure = azure, infotrygdRestUrl = URI(propString("infotrygd.url")))
+    val infotrygd = InfotrygdHttpIntegrasjon(azure = azure,
+                                             infotrygdRestUrl = URI(propString("infotrygd.url")),
+        timeoutMS = propInt("infotrygd.timeout"))
 
     val infotrygdKilde = InfotrygdPeriodeService(fnrMapper = fnrMapper, infotrygd = infotrygd)
     val spaKilde = SpaPeriodeService()
@@ -104,6 +106,7 @@ fun Application.spole() {
 
 @KtorExperimentalAPI
 fun Application.propString(path: String): String = this.environment.config.property(path).getString()
+fun Application.propInt(path: String): Int = propString(path).toInt()
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 

@@ -14,16 +14,18 @@ import java.time.format.DateTimeFormatter
 
 class InfotrygdHttpIntegrasjon(
     val azure: Azure,
-    val infotrygdRestUrl: URI
+    val infotrygdRestUrl: URI,
+    val timeoutMS: Int
 ) : InfotrygdIntegrasjon {
 
     override fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> {
         println("henter sykepengeperioder fra infotrygd")
         val token = azure.hentToken().accessToken
-        val (_, _, result) = "${infotrygdRestUrl.toString()}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}"
+        val (_, _, result) = "${infotrygdRestUrl}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}"
             .httpGet()
             .authentication()
             .bearer(token)
+            .timeout(timeoutMS)
             .response()
 
         val sykepenger: ITSykepenger = JsonConfig.objectMapper.readValue(result.get())

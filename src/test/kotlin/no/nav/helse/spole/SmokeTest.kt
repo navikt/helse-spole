@@ -46,6 +46,7 @@ class SmokeTest {
         put("azure.tenant.id", "some_long_string")
 
         put("infotrygd.url", "http://ikke.satt")
+        put("infotrygd.timeout", "1000000")
 
         put("jwt.audience", "blandt de beste i hollywood")
         put("jwt.realm", "a magic kingdom beyond the hills")
