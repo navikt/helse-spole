@@ -25,7 +25,7 @@ class InfotrygdHttpIntegrasjon(
             .httpGet()
             .authentication()
             .bearer(token)
-            .timeout(timeoutMS)
+            .timeoutRead(timeoutMS)
             .response()
 
         val sykepenger: ITSykepenger = JsonConfig.objectMapper.readValue(result.get())
