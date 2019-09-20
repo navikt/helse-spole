@@ -32,8 +32,9 @@ import java.time.LocalDate
 
 
 object JsonConfig {
-    val objectMapper: ObjectMapper =
+    val accessTokenMapper: ObjectMapper =
         ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    val infotrygdMapper = ObjectMapper().findAndRegisterModules()
 }
 
 @KtorExperimentalAPI
@@ -88,7 +89,7 @@ fun Application.spole() {
             get("/sykepengeperioder/{aktorId}") {
                 val perioder =
                     historikkController.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
-                call.respond(HttpStatusCode.OK, JsonConfig.objectMapper.writeValueAsBytes(perioder))
+                call.respond(HttpStatusCode.OK, JsonConfig.accessTokenMapper.writeValueAsBytes(perioder))
             }
         }
         get("/isalive") {

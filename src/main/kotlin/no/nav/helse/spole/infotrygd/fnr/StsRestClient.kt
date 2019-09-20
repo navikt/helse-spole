@@ -2,7 +2,6 @@ package no.nav.helse.spole.infotrygd.fnr
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.github.kittinunf.fuel.core.extensions.authenticate
 import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.httpGet
 import no.nav.helse.spole.JsonConfig
@@ -24,7 +23,7 @@ class StsRestClient(
                 .response()
 
             cachedOidcSTSToken =
-                JsonConfig.objectMapper.readValue(result.get(), STSToken::class.java)
+                JsonConfig.accessTokenMapper.readValue(result.get(), STSToken::class.java)
         }
         return cachedOidcSTSToken!!.accessToken
     }

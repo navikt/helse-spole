@@ -14,7 +14,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.toUtf8Bytes
 import no.nav.helse.spole.JsonConfig
 import no.nav.helse.spole.infotrygd.fnr.StsRestClient
-import java.net.URI
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 
@@ -48,7 +47,7 @@ class BasicAuthTest {
                 authenticate("aname") {
                     get("/rest/v1/sts/token") {
                         call.respondBytes(contentType = ContentType.Application.Json, status = HttpStatusCode.OK) {
-                            JsonConfig.objectMapper.writeValueAsString(
+                            JsonConfig.accessTokenMapper.writeValueAsString(
                                 StsRestClient.STSToken(
                                     accessToken = "yup",
                                     expiresIn = 30023,

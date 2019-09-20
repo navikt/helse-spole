@@ -9,7 +9,7 @@ import kotlin.test.assertNotNull
 class ITSykepengerTest {
     @Test
     fun `Bør kunne parse en tom sykepenge-historikk`() {
-        val sykepenger: ITSykepenger = JsonConfig.objectMapper.readValue(tomHistorikk)
+        val sykepenger: ITSykepenger = JsonConfig.accessTokenMapper.readValue(tomHistorikk)
         assertNotNull(sykepenger)
         assertEquals(0, sykepenger.sykmeldingsperioder.size)
     }

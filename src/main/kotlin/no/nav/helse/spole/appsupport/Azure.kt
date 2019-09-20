@@ -3,7 +3,6 @@ package no.nav.helse.spole.appsupport
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpPost
 import no.nav.helse.spole.JsonConfig
-import java.net.URI
 import java.time.LocalDateTime
 
 class Azure(
@@ -38,7 +37,7 @@ class Azure(
                 "grant_type" to "client_credentials"
             )
         ).response()
-        return JsonConfig.objectMapper.readValue(result.get())
+        return JsonConfig.accessTokenMapper.readValue(result.get())
     }
 }
 

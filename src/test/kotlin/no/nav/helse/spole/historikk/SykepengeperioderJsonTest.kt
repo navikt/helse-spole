@@ -10,8 +10,8 @@ class SykepengeperioderJsonTest {
 
     @Test
     fun `objekt til JSON og tilbake til object`() {
-        val json = JsonConfig.objectMapper.writeValueAsBytes(perioder)
-        val objekt: Sykepengeperioder = JsonConfig.objectMapper.readValue(json)
+        val json = JsonConfig.accessTokenMapper.writeValueAsBytes(perioder)
+        val objekt: Sykepengeperioder = JsonConfig.accessTokenMapper.readValue(json)
 
         assertEquals("10000000000", objekt.aktørId)
         assertEquals(2, objekt.perioder.size)

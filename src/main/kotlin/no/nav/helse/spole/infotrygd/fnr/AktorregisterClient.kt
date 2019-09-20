@@ -1,8 +1,6 @@
 package no.nav.helse.spole.infotrygd.fnr
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.core.extensions.authentication
 import com.github.kittinunf.fuel.httpGet
 import no.nav.helse.spole.Fodselsnummer
@@ -38,11 +36,11 @@ class AktorregisterClient(
 }
 
 fun String.foedselsnummerFraAktørregisterResponse(): Fodselsnummer {
-    val rootNode = JsonConfig.objectMapper.readTree(this)
+    val rootNode = JsonConfig.accessTokenMapper.readTree(this)
     var identer = emptyList<Ident>()
 
     rootNode.elements().forEachRemaining {
-        val parsed = JsonConfig.objectMapper.treeToValue(it, IdentResultat::class.java)
+        val parsed = JsonConfig.accessTokenMapper.treeToValue(it, IdentResultat::class.java)
         if (parsed.feilmelding != null) throw RuntimeException("Feil i fnr oppslag: ${parsed.feilmelding}")
         else identer = identer.plus(parsed.identer as Iterable<Ident>)
     }
