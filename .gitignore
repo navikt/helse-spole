@@ -56,3 +56,6 @@ nb-configuration.xml
 mqjms.log.*
 
 full-stack
+
+src/test/kotlin/no/nav/helse/spole/TmpParseTest.kt
+
