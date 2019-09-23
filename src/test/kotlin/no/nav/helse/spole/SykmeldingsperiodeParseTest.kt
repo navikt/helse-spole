@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class TmpParseTest {
+class SykmeldingsperiodeParseTest {
 
     @Test
     fun `bør klare å parse en vilkårlig sykemeldingsperioderespons`() {
