@@ -26,7 +26,6 @@ import no.nav.helse.spole.infotrygd.fnr.AktorregisterClient
 import no.nav.helse.spole.infotrygd.fnr.StsRestClient
 import no.nav.helse.spole.spa.SpaPeriodeService
 import java.net.URI
-import java.net.URL
 import java.time.LocalDate
 
 object JsonConfig {
@@ -66,24 +65,10 @@ fun Application.spole() {
     val spaKilde = SpaPeriodeService()
     val historikkTjeneste = HistorikkTjeneste(infotrygd = infotrygdKilde, spa = spaKilde)
 
-    val jwtKeys = "https://login.microsoftonline.com/${propString("azure.tenant.id")}/discovery/v2.0/keys"
-    val jwtIssuer = "https://sts.windows.net/${propString("azure.tenant.id")}/"
-    val jwtAudience = environment.config.property("jwt.audience").getString()
-    val jwtRealm = environment.config.property("jwt.realm").getString()
-
-    install(Authentication) {
-        jwt("jwt") {
-            realm = jwtRealm
-            verifier(UrlJwkProvider(URL(jwtKeys)), jwtIssuer)
-            validate { credential ->
-                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
-            }
-        }
-    }
-
+    setupAuthentication()
 
     routing {
-        authenticate("jwt") {
+        authenticate(AUTH_NAME) {
             get("/sykepengeperioder/{aktorId}") {
                 val perioder =
                     historikkTjeneste.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
@@ -94,8 +79,10 @@ fun Application.spole() {
     }
 }
 
+
 @KtorExperimentalAPI
 fun Application.propString(path: String): String = this.environment.config.property(path).getString()
+@KtorExperimentalAPI
 fun Application.propInt(path: String): Int = propString(path).toInt()
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
