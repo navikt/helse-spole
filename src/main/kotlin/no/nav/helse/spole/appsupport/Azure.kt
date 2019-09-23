@@ -16,13 +16,10 @@ class Azure(
     private var expiry: LocalDateTime = LocalDateTime.now().minusYears(100)
 
     fun hentToken(): Token {
-        println("henter azure ad token")
         if (isExpired()) {
-            println("autentiserer mot azure ad")
             token = fetchTokenFromAzure()
             expiry = LocalDateTime.now().plusSeconds(token.expiresIn).minusSeconds(60)
         }
-        println("returnerer azure ad token")
         return token
     }
 

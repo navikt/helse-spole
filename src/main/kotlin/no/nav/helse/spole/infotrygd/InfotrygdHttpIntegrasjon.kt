@@ -19,7 +19,6 @@ class InfotrygdHttpIntegrasjon(
 ) : InfotrygdIntegrasjon {
 
     override fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> {
-        println("henter sykepengeperioder fra infotrygd")
         val token = azure.hentToken().accessToken
         val (_, _, result) = "${infotrygdRestUrl}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}"
             .httpGet()
