@@ -2,8 +2,8 @@ package no.nav.helse.spole.historikk
 
 import java.time.LocalDate
 
-class HistorikkController(val infotrygd: PeriodeKilde,
-                          val spa: PeriodeKilde) {
+class HistorikkTjeneste(val infotrygd: PeriodeKilde,
+                        val spa: PeriodeKilde) {
 
     fun hentPerioder(aktørId: AktørId,
                      fom: LocalDate?): Sykepengeperioder {

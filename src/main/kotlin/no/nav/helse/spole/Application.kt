@@ -20,7 +20,7 @@ import io.ktor.util.KtorExperimentalAPI
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.helse.spole.appsupport.Azure
-import no.nav.helse.spole.historikk.HistorikkController
+import no.nav.helse.spole.historikk.HistorikkTjeneste
 import no.nav.helse.spole.infotrygd.InfotrygdHttpIntegrasjon
 import no.nav.helse.spole.infotrygd.InfotrygdPeriodeService
 import no.nav.helse.spole.infotrygd.fnr.AktorregisterClient
@@ -66,7 +66,7 @@ fun Application.spole() {
 
     val infotrygdKilde = InfotrygdPeriodeService(fnrMapper = fnrMapper, infotrygd = infotrygd)
     val spaKilde = SpaPeriodeService()
-    val historikkController = HistorikkController(infotrygd = infotrygdKilde, spa = spaKilde)
+    val historikkTjeneste = HistorikkTjeneste(infotrygd = infotrygdKilde, spa = spaKilde)
 
     val jwtKeys = "https://login.microsoftonline.com/${propString("azure.tenant.id")}/discovery/v2.0/keys"
     val jwtIssuer = "https://sts.windows.net/${propString("azure.tenant.id")}/"
@@ -88,7 +88,7 @@ fun Application.spole() {
         authenticate("jwt") {
             get("/sykepengeperioder/{aktorId}") {
                 val perioder =
-                    historikkController.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
+                    historikkTjeneste.hentPerioder(call.parameters["aktorId"]!!, LocalDate.now().minusYears(3))
                 call.respond(HttpStatusCode.OK, JsonConfig.accessTokenMapper.writeValueAsBytes(perioder))
             }
         }
