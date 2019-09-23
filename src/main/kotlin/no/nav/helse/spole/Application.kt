@@ -13,7 +13,6 @@ import io.ktor.auth.jwt.jwt
 import io.ktor.http.HttpStatusCode
 import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.util.KtorExperimentalAPI
@@ -29,7 +28,6 @@ import no.nav.helse.spole.spa.SpaPeriodeService
 import java.net.URI
 import java.net.URL
 import java.time.LocalDate
-
 
 object JsonConfig {
     val accessTokenMapper: ObjectMapper =
@@ -92,16 +90,7 @@ fun Application.spole() {
                 call.respond(HttpStatusCode.OK, JsonConfig.accessTokenMapper.writeValueAsBytes(perioder))
             }
         }
-        get("/isalive") {
-            call.respondText { "ALIVE" }
-        }
-        get("/isready") {
-            call.respondText { "READY" }
-        }
-
-        get("/internal/metrics") {
-            call.respondText(collectorRegistry.scrape())
-        }
+        nais(collectorRegistry)
     }
 }
 
