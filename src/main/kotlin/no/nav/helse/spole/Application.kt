@@ -22,7 +22,7 @@ import java.net.URI
 object JsonConfig {
     val accessTokenMapper: ObjectMapper =
         ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-    val infotrygdMapper = ObjectMapper().findAndRegisterModules()
+    val infotrygdMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
 }
 
 @KtorExperimentalAPI
