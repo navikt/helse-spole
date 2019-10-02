@@ -33,7 +33,6 @@ class SmokeTest {
     }
 
     private fun Application.testEnv() = (environment.config as MapApplicationConfig).apply {
-        // Set here the properties
         put("sts.url", "http://ikke.satt")
         put("sts.password", "so_secret")
         put("sts.username", "so_secret_username")
