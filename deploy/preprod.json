@@ -50,6 +50,7 @@
         "enabled": true
     },
     "webproxy": true,
+    "secureLogs": true,
     "env": [
       {
         "name": "AKTORREGISTER_URL",
