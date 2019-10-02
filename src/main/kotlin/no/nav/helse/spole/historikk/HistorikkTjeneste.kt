@@ -34,9 +34,11 @@ interface PeriodeKilde {
 fun Routing.historikk(tjeneste: HistorikkTjeneste) {
     authenticate(AUTH_NAME) {
         get("/sykepengeperioder/{aktorId}") {
-            val optionalDate = call.parameters["fraDato"]
+            //val optionalDate = call.parameters["fraDato"]
+            val optionalDate = null
             val fraDato: LocalDate = optionalDate?.toDate() ?: LocalDate.now().minusYears(3)
             val perioder = tjeneste.hentPerioder(call.parameters["aktorId"]!!, fraDato)
+
             call.respond(HttpStatusCode.OK, JsonConfig.accessTokenMapper.writeValueAsBytes(perioder))
         }
     }
