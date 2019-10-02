@@ -18,6 +18,7 @@
         <fuel.version>1.15.1</fuel.version>
         <prometheus.version>0.6.0</prometheus.version>
         <junit.version>4.12</junit.version>
+        <logback.version>1.2.3</logback.version>
     </properties>
 
     <repositories>
@@ -93,7 +94,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+            <version>${logback.version}</version>
         </dependency>
 
         <dependency>
