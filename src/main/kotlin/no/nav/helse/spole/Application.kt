@@ -66,11 +66,11 @@ fun Application.spole() {
 
     setupAuthentication()
 
-    install(CallLogging) {
+    /*install(CallLogging) {
         level = Level.INFO
         logger = LoggerFactory.getLogger("tjenestekall")
         filter { call -> call.request.path().startsWith("/sykepengeperioder/") }
-    }
+    }*/
 
     routing {
         historikk(historikkTjeneste)
