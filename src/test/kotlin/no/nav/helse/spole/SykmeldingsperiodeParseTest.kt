@@ -9,15 +9,30 @@ import kotlin.test.assertNotNull
 class SykmeldingsperiodeParseTest {
 
     @Test
+    fun `Bør kunne parse en tom sykepenge-historikk`() {
+        val sykepenger: ITSykepenger = JsonConfig.accessTokenMapper.readValue(tomHistorikk)
+        assertNotNull(sykepenger)
+        assertEquals(0, sykepenger.sykmeldingsperioder.size)
+    }
+
+    @Test
     fun `bør klare å parse en vilkårlig sykemeldingsperioderespons`() {
-        val parsedValue = JsonConfig.infotrygdMapper.readValue<ITSykepenger>(json)
+        val parsedValue = JsonConfig.infotrygdMapper.readValue<ITSykepenger>(historikk)
 
         assertNotNull(parsedValue)
         assertEquals(3, parsedValue.sykmeldingsperioder.size)
     }
 }
 
-val json = """
+
+val tomHistorikk: String = """
+    {
+        "sykmeldingsperioder":[]
+    }
+""".trimIndent()
+
+
+val historikk = """
     {
 	"sykmeldingsperioder": [{
 		"ident": 99950123100000,
