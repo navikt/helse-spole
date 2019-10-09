@@ -2,7 +2,8 @@ package no.nav.helse.spole
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.helse.spole.infotrygd.ITSykepenger
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -17,10 +18,16 @@ class SykmeldingsperiodeParseTest {
 
     @Test
     fun `bør klare å parse en vilkårlig sykemeldingsperioderespons`() {
-        val parsedValue = JsonConfig.infotrygdMapper.readValue<ITSykepenger>(historikk)
+        val parsedValue = JsonConfig.infotrygdMapper.readValue<ITSykepenger>(testhistorikk)
 
         assertNotNull(parsedValue)
         assertEquals(3, parsedValue.sykmeldingsperioder.size)
+        assertEquals(1, parsedValue.sykmeldingsperioder
+        .find { it.sykemeldtFom == LocalDate.parse("2019-05-01") }!!
+            .graderingList.size)
+        assertEquals(5, parsedValue.sykmeldingsperioder
+        .find { it.sykemeldtFom == LocalDate.parse("2018-01-30") }!!
+            .graderingList.size)
     }
 }
 
@@ -32,7 +39,7 @@ val tomHistorikk: String = """
 """.trimIndent()
 
 
-val historikk = """
+val testhistorikk = """
     {
 	"sykmeldingsperioder": [{
 		"ident": 99950123100000,

@@ -5,10 +5,15 @@ import java.time.LocalDate
 data class Sykepengeperioder(val aktørId: AktørId, val perioder: Collection<Periode>)
 
 // om refusjon: ha med et utbetalt til orgnummer
-data class Periode(val fom: LocalDate, val tom: LocalDate, val grad: Grad, val kilde: Kilde)
+data class Periode(val fom: LocalDate,
+                   val tom: LocalDate,
+                   val sykemeldingsgrad: Sykemeldingsgrad,
+                   val utbetalingsgrad: Utbetalingsgrad,
+                   val kilde: Kilde)
 
 typealias AktørId = String
-typealias Grad = String
+typealias Sykemeldingsgrad = String
+typealias Utbetalingsgrad = String
 
 enum class Kilde {
     INFOTRYGD,

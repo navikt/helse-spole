@@ -32,5 +32,5 @@ class InfotrygdHttpIntegrasjon(
     }
 }
 
-private fun List<ITPeriode>.asPerioder(): Collection<Periode> = this.map { it.toPeriode() }
-private fun ITPeriode.toPeriode(): Periode = Periode(this.sykemeldtFom, this.sykemeldtTom, this.grad, Kilde.INFOTRYGD)
+fun List<ITPeriode>.asPerioder(): Collection<Periode> = this.map { it.toPeriode() }
+private fun ITPeriode.toPeriode(): Periode = Periode(this.sykemeldtFom, this.sykemeldtTom, this.grad, this.graderingList.first().grad, Kilde.INFOTRYGD)

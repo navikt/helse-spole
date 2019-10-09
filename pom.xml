@@ -17,7 +17,7 @@
         <ktor.version>1.2.4</ktor.version>
         <fuel.version>1.15.1</fuel.version>
         <prometheus.version>0.6.0</prometheus.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>5.5.2</junit.version>
         <logback.version>1.2.3</logback.version>
     </properties>
 
@@ -121,8 +121,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
@@ -150,6 +150,11 @@
         </resources>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
