@@ -2,6 +2,7 @@ package no.nav.helse.spole
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.features.CallLogging
@@ -26,13 +27,13 @@ import java.net.URI
 object JsonConfig {
     val accessTokenMapper: ObjectMapper =
         ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-    val infotrygdMapper: ObjectMapper = ObjectMapper().findAndRegisterModules()
+    val infotrygdMapper: ObjectMapper = ObjectMapper()
+        .findAndRegisterModules()
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 }
 
 @KtorExperimentalAPI
 fun Application.spole() {
-
-
 
     val collectorRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
