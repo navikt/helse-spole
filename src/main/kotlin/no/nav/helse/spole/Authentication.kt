@@ -9,7 +9,7 @@ import io.ktor.auth.jwt.jwt
 import io.ktor.util.KtorExperimentalAPI
 import java.net.URL
 
-internal const val AUTH_NAME = "jwr"
+internal const val AUTH_NAME = "jwt"
 
 @KtorExperimentalAPI
 fun Application.setupAuthentication() {

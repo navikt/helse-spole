@@ -47,7 +47,17 @@
     },
     "team": "tbd",
     "vault": {
-        "enabled": true
+        "enabled": true,
+        "paths": [
+          {
+            "mountPath": "/var/run/secrets/nais.io/vault",
+            "kvPath": "/kv/preprod/fss/spole/default"
+          },
+          {
+            "mountPath": "/var/run/secrets/nais.io/azure",
+            "kvPath": "/azuread/data/dev/creds/helse-spole"
+          }
+        ]
     },
     "webproxy": true,
     "secureLogs": {

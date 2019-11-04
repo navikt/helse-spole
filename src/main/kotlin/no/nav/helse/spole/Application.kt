@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.install
+import io.ktor.config.MapApplicationConfig
 import io.ktor.features.CallLogging
 import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.request.path
@@ -22,6 +23,8 @@ import no.nav.helse.spole.infotrygd.fnr.StsRestClient
 import no.nav.helse.spole.spa.SpaPeriodeService
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
+import java.io.File
+import java.io.FileNotFoundException
 import java.net.URI
 
 object JsonConfig {
@@ -34,6 +37,16 @@ object JsonConfig {
 
 @KtorExperimentalAPI
 fun Application.spole() {
+
+    (this.environment.config as MapApplicationConfig).apply {
+        ("/var/run/secrets/nais.io/azure/client_id".readFile() ?: System.getenv("AZURE_CLIENT_ID"))?.let {
+            put("azure.client.id", it)
+        }
+        ("/var/run/secrets/nais.io/azure/client_secret".readFile() ?: System.getenv("AZURE_CLIENT_SECRET"))?.let {
+            put("azure.client.secret", it)
+        }
+        put("jwt.audience", "api://${propString("azure.client.id")}")
+    }
 
     val collectorRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
@@ -79,6 +92,12 @@ fun Application.spole() {
     }
 }
 
+private fun String.readFile() =
+    try {
+        File(this).readText(Charsets.UTF_8)
+    } catch (err: FileNotFoundException) {
+        null
+    }
 
 @KtorExperimentalAPI
 fun Application.propString(path: String): String = this.environment.config.property(path).getString()
