@@ -29,9 +29,15 @@ import java.io.FileNotFoundException
 import java.net.URI
 
 object JsonConfig {
-    val accessTokenMapper: ObjectMapper =
-        ObjectMapper().findAndRegisterModules().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-    val infotrygdMapper: ObjectMapper = ObjectMapper()
+    val accessTokenMapper =
+        ObjectMapper().findAndRegisterModules()
+            .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    val restApiMapper =
+        ObjectMapper()
+            .findAndRegisterModules()
+            .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    val infotrygdMapper = ObjectMapper()
         .findAndRegisterModules()
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
 }
@@ -80,7 +86,7 @@ fun Application.spole() {
     }
 
     routing {
-        historikk(historikkTjeneste)
+        historikk(historikkTjeneste, JsonConfig.restApiMapper)
         nais(collectorRegistry)
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.helse.spole.historikk
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.application.call
 import io.ktor.auth.authenticate
 import io.ktor.http.HttpStatusCode
@@ -31,7 +32,7 @@ interface PeriodeKilde {
     fun perioder(aktørId: AktørId, fom: LocalDate): Sykepengeperioder
 }
 
-fun Routing.historikk(tjeneste: HistorikkTjeneste) {
+fun Routing.historikk(tjeneste: HistorikkTjeneste, mapper: ObjectMapper) {
     authenticate(AUTH_NAME) {
         get("/sykepengeperioder/{aktorId}") {
             //val optionalDate = call.parameters["fraDato"]
@@ -39,7 +40,7 @@ fun Routing.historikk(tjeneste: HistorikkTjeneste) {
             val fraDato: LocalDate = optionalDate?.toDate() ?: LocalDate.now().minusYears(3)
             val perioder = tjeneste.hentPerioder(call.parameters["aktorId"]!!, fraDato)
 
-            call.respond(HttpStatusCode.OK, JsonConfig.accessTokenMapper.writeValueAsBytes(perioder))
+            call.respond(HttpStatusCode.OK, mapper.writeValueAsBytes(perioder))
         }
     }
 }
