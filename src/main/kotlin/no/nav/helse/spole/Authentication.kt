@@ -15,7 +15,7 @@ internal const val AUTH_NAME = "jwt"
 fun Application.setupAuthentication(
     jwtAudience: String,
     jwtKeys: String = "https://login.microsoftonline.com/${propString("azure.tenant.id")}/discovery/v2.0/keys",
-    jwtIssuer: String = "https://sts.windows.net/${propString("azure.tenant.id")}/",
+    jwtIssuer: String = "https://login.microsoftonline.com/${propString("azure.tenant.id")}/v2.0",
     jwtRealm: String = environment.config.property("jwt.realm").getString()
 ) {
     install(Authentication) {
