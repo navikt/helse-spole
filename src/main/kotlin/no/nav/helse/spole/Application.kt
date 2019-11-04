@@ -76,7 +76,6 @@ fun Application.spole() {
 
     install(CallLogging) {
         level = Level.INFO
-        logger = LoggerFactory.getLogger("tjenestekall")
         filter { call -> call.request.path().startsWith("/sykepengeperioder/") }
     }
 
