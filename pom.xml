@@ -19,6 +19,7 @@
         <prometheus.version>0.6.0</prometheus.version>
         <junit.version>5.5.2</junit.version>
         <logback.version>1.2.3</logback.version>
+        <jackson.version>2.10.0</jackson.version>
     </properties>
 
     <repositories>
@@ -105,13 +106,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.9.8</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
-            <version>2.9.8</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
