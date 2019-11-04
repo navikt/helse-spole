@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.install
+import io.ktor.config.HoconApplicationConfig
 import io.ktor.config.MapApplicationConfig
 import io.ktor.features.CallLogging
 import io.ktor.metrics.micrometer.MicrometerMetrics
@@ -38,16 +39,6 @@ object JsonConfig {
 @KtorExperimentalAPI
 fun Application.spole() {
 
-    (this.environment.config as MapApplicationConfig).apply {
-        "/var/run/secrets/nais.io/azure/client_id".readFile()?.let {
-            put("azure.client.id", it)
-        }
-        "/var/run/secrets/nais.io/azure/client_secret".readFile()?.let {
-            put("azure.client.secret", it)
-        }
-        put("jwt.audience", "api://${propString("azure.client.id")}")
-    }
-
     val collectorRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
         registry = collectorRegistry
@@ -61,9 +52,10 @@ fun Application.spole() {
 
     val fnrMapper = AktorregisterClient(aktørregisterUrl = URI(propString("fnrkilde.url")), sts = stsRestClient)
 
+    val azureClientId = "/var/run/secrets/nais.io/azure/client_secret".readFile() ?: propString("azure.client.secret")
     val azure = Azure(
-        clientId = propString("azure.client.id"),
-        clientSecret = propString("azure.client.secret"),
+        clientId = azureClientId,
+        clientSecret = "/var/run/secrets/nais.io/azure/client_id".readFile() ?: propString("azure.client.id"),
         scope = propString("azure.scope"),
         tenantId = propString("azure.tenant.id")
     )
@@ -78,7 +70,9 @@ fun Application.spole() {
     val spaKilde = SpaPeriodeService()
     val historikkTjeneste = HistorikkTjeneste(infotrygd = infotrygdKilde, spa = spaKilde)
 
-    setupAuthentication()
+    setupAuthentication(
+        jwtAudience = "api://$azureClientId"
+    )
 
     install(CallLogging) {
         level = Level.INFO

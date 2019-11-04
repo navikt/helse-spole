@@ -12,12 +12,12 @@ import java.net.URL
 internal const val AUTH_NAME = "jwt"
 
 @KtorExperimentalAPI
-fun Application.setupAuthentication() {
-    val jwtKeys = "https://login.microsoftonline.com/${propString("azure.tenant.id")}/discovery/v2.0/keys"
-    val jwtIssuer = "https://sts.windows.net/${propString("azure.tenant.id")}/"
-    val jwtAudience = environment.config.property("jwt.audience").getString()
-    val jwtRealm = environment.config.property("jwt.realm").getString()
-
+fun Application.setupAuthentication(
+    jwtAudience: String,
+    jwtKeys: String = "https://login.microsoftonline.com/${propString("azure.tenant.id")}/discovery/v2.0/keys",
+    jwtIssuer: String = "https://sts.windows.net/${propString("azure.tenant.id")}/",
+    jwtRealm: String = environment.config.property("jwt.realm").getString()
+) {
     install(Authentication) {
         jwt(AUTH_NAME) {
             realm = jwtRealm
