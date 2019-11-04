@@ -14,6 +14,10 @@ internal const val AUTH_NAME = "jwt"
 
 private val log = LoggerFactory.getLogger("SpoleAuthentication")
 
+private val sparkelSykepengeperioderProd = "2a3216c1-1434-4d2d-99aa-f427fe0ec1ec"
+private val sparkelSykepengeperioderPreprod = "b76c01e5-34b2-43df-a056-30e9bc504e28"
+private val whiteList = listOf(sparkelSykepengeperioderProd, sparkelSykepengeperioderPreprod)
+
 @KtorExperimentalAPI
 fun Application.setupAuthentication(
     jwtAudience: String,
@@ -26,10 +30,14 @@ fun Application.setupAuthentication(
             realm = jwtRealm
             verifier(UrlJwkProvider(URL(jwtKeys)), jwtIssuer)
             validate { credential ->
-                if (credential.payload.audience.contains(jwtAudience)) {
-                    log.info("Authenticated subject ${credential.payload.subject}")
+                val validAudience = credential.payload.audience.contains(jwtAudience)
+                val validSubject = whiteList.contains(credential.payload.subject)
+
+                if (validAudience && validSubject) {
                     JWTPrincipal(credential.payload)
                 } else {
+                    if (!validAudience) log.info("Invalid audience: ${credential.payload.audience}")
+                    if (!validSubject) log.info("Invalid subject: ${credential.payload.subject}")
                     null
                 }
             }
