@@ -67,10 +67,6 @@
       {
         "name": "AKTORREGISTER_URL",
         "value": "https://app.adeo.no/aktoerregister"
-      },
-      {
-        "name": "INFOTRYGD_SYKEPENGER_URL",
-        "value": "https://infotrygd-sykepenger.nais.preprod.local/v1/hentSykepengerListe"
       }
     ]
   }
