@@ -39,10 +39,10 @@ object JsonConfig {
 fun Application.spole() {
 
     (this.environment.config as MapApplicationConfig).apply {
-        ("/var/run/secrets/nais.io/azure/client_id".readFile() ?: System.getenv("AZURE_CLIENT_ID"))?.let {
+        "/var/run/secrets/nais.io/azure/client_id".readFile()?.let {
             put("azure.client.id", it)
         }
-        ("/var/run/secrets/nais.io/azure/client_secret".readFile() ?: System.getenv("AZURE_CLIENT_SECRET"))?.let {
+        "/var/run/secrets/nais.io/azure/client_secret".readFile()?.let {
             put("azure.client.secret", it)
         }
         put("jwt.audience", "api://${propString("azure.client.id")}")

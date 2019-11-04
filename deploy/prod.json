@@ -67,6 +67,14 @@
       {
         "name": "AKTORREGISTER_URL",
         "value": "https://app.adeo.no/aktoerregister"
+      },
+      {
+        "name": "INFOTRYGD_SCOPE",
+        "value": "https://nav.no/infotrygdsykepenger/.default"
+      },
+      {
+        "name": "AZURE_TENANT_ID",
+        "value": "62366534-1ec3-4962-8869-9b5535279d0b"
       }
     ]
   }
