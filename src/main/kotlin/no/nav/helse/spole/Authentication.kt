@@ -7,9 +7,12 @@ import io.ktor.auth.Authentication
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.util.KtorExperimentalAPI
+import org.slf4j.LoggerFactory
 import java.net.URL
 
 internal const val AUTH_NAME = "jwt"
+
+private val log = LoggerFactory.getLogger("SpoleAuthentication")
 
 @KtorExperimentalAPI
 fun Application.setupAuthentication(
@@ -23,7 +26,12 @@ fun Application.setupAuthentication(
             realm = jwtRealm
             verifier(UrlJwkProvider(URL(jwtKeys)), jwtIssuer)
             validate { credential ->
-                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
+                if (credential.payload.audience.contains(jwtAudience)) {
+                    log.info("Authenticated subject ${credential.payload.subject}")
+                    JWTPrincipal(credential.payload)
+                } else {
+                    null
+                }
             }
         }
     }
