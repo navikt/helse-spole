@@ -71,7 +71,7 @@ fun Application.spole() {
     val historikkTjeneste = HistorikkTjeneste(infotrygd = infotrygdKilde, spa = spaKilde)
 
     setupAuthentication(
-        jwtAudience = "api://$azureClientId"
+        jwtAudience = azureClientId
     )
 
     install(CallLogging) {
