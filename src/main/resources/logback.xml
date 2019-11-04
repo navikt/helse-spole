@@ -1,8 +1,6 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+    <appender name="STDOUT_JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
     <appender name="secureLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -27,6 +25,6 @@
     <logger name="io.ktor.auth.jwt" level="TRACE" />
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDOUT_JSON"/>
     </root>
 </configuration>
