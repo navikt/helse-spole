@@ -52,10 +52,10 @@ fun Application.spole() {
 
     val fnrMapper = AktorregisterClient(aktørregisterUrl = URI(propString("fnrkilde.url")), sts = stsRestClient)
 
-    val azureClientId = "/var/run/secrets/nais.io/azure/client_secret".readFile() ?: propString("azure.client.secret")
+    val azureClientId = "/var/run/secrets/nais.io/azure/client_id".readFile() ?: propString("azure.client.id")
     val azure = Azure(
         clientId = azureClientId,
-        clientSecret = "/var/run/secrets/nais.io/azure/client_id".readFile() ?: propString("azure.client.id"),
+        clientSecret =  "/var/run/secrets/nais.io/azure/client_secret".readFile() ?: propString("azure.client.secret"),
         scope = propString("azure.scope"),
         tenantId = propString("azure.tenant.id")
     )
