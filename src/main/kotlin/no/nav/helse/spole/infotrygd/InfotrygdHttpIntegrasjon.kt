@@ -8,6 +8,8 @@ import no.nav.helse.spole.JsonConfig
 import no.nav.helse.spole.appsupport.Azure
 import no.nav.helse.spole.historikk.Kilde
 import no.nav.helse.spole.historikk.Periode
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -18,6 +20,10 @@ class InfotrygdHttpIntegrasjon(
     val timeoutMS: Int
 ) : InfotrygdIntegrasjon {
 
+    private companion object {
+        private val tjenestekallLog = LoggerFactory.getLogger("tjenestekall")
+    }
+
     override fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> {
         val token = azure.hentToken().accessToken
         val (_, _, result) = "${infotrygdRestUrl}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}"
@@ -27,8 +33,11 @@ class InfotrygdHttpIntegrasjon(
             .timeoutRead(timeoutMS)
             .response()
 
-        val sykepenger: ITSykepenger = JsonConfig.infotrygdMapper.readValue(result.get())
-        return sykepenger.sykmeldingsperioder.asPerioder()
+        return result.get().also {
+            tjenestekallLog.info(it.toString())
+        }.let {
+            JsonConfig.infotrygdMapper.readValue(it) as ITSykepenger
+        }.sykmeldingsperioder.asPerioder()
     }
 }
 
