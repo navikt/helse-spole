@@ -6,6 +6,6 @@ import no.nav.helse.spole.historikk.Sykepengeperioder
 import java.time.LocalDate
 
 class SpaPeriodeService : PeriodeKilde {
-    override fun perioder(aktørId: AktørId, fom: LocalDate): Sykepengeperioder =
+    override fun perioder(aktørId: AktørId, fom: LocalDate, tom: LocalDate): Sykepengeperioder =
         Sykepengeperioder(aktørId, emptyList())
 }

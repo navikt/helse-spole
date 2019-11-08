@@ -8,7 +8,6 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import no.nav.helse.spole.AUTH_NAME
-import no.nav.helse.spole.JsonConfig
 import java.time.LocalDate
 
 class HistorikkTjeneste(
@@ -18,27 +17,26 @@ class HistorikkTjeneste(
 
     fun hentPerioder(
         aktørId: AktørId,
-        fom: LocalDate?
+        fom: LocalDate = LocalDate.now().minusYears(3),
+        tom: LocalDate = LocalDate.now()
     ): Sykepengeperioder {
-        val faktiskFom = fom ?: LocalDate.now().minusYears(3)
-        return infotrygdPerioder(aktørId, faktiskFom).join(spaPerioder(aktørId, faktiskFom))
+        return infotrygdPerioder(aktørId, fom, tom).join(spaPerioder(aktørId, fom, tom))
     }
 
-    private fun infotrygdPerioder(aktørId: AktørId, fom: LocalDate) = infotrygd.perioder(aktørId, fom)
-    private fun spaPerioder(aktørId: AktørId, fom: LocalDate) = spa.perioder(aktørId, fom)
+    private fun infotrygdPerioder(aktørId: AktørId, fom: LocalDate, tom: LocalDate) = infotrygd.perioder(aktørId, fom, tom)
+    private fun spaPerioder(aktørId: AktørId, fom: LocalDate, tom: LocalDate) = spa.perioder(aktørId, fom, tom)
 }
 
 interface PeriodeKilde {
-    fun perioder(aktørId: AktørId, fom: LocalDate): Sykepengeperioder
+    fun perioder(aktørId: AktørId, fom: LocalDate, tom: LocalDate): Sykepengeperioder
 }
 
 fun Routing.historikk(tjeneste: HistorikkTjeneste, mapper: ObjectMapper) {
     authenticate(AUTH_NAME) {
         get("/sykepengeperioder/{aktorId}") {
-            //val optionalDate = call.parameters["fraDato"]
-            val optionalDate = null
-            val fraDato: LocalDate = optionalDate?.toDate() ?: LocalDate.now().minusYears(3)
-            val perioder = tjeneste.hentPerioder(call.parameters["aktorId"]!!, fraDato)
+            val fraDato = call.request.queryParameters["periodeFom"]?.toDate() ?: LocalDate.now().minusYears(3)
+            val tilDato = call.request.queryParameters["periodeTom"]?.toDate() ?: LocalDate.now()
+            val perioder = tjeneste.hentPerioder(call.parameters["aktorId"]!!, fraDato, tilDato)
 
             call.respond(HttpStatusCode.OK, mapper.writeValueAsBytes(perioder))
         }

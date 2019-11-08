@@ -24,9 +24,9 @@ class InfotrygdHttpIntegrasjon(
         private val tjenestekallLog = LoggerFactory.getLogger("tjenestekall")
     }
 
-    override fun forFnr(fnr: Fodselsnummer, fom: LocalDate): Collection<Periode> {
+    override fun forFnr(fnr: Fodselsnummer, fom: LocalDate, tom: LocalDate): Collection<Periode> {
         val token = azure.hentToken().accessToken
-        val (_, _, result) = "${infotrygdRestUrl}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}"
+        val (_, _, result) = "${infotrygdRestUrl}?fnr=$fnr&fraDato=${fom.format(DateTimeFormatter.ISO_DATE)}&tilDato=${tom.format(DateTimeFormatter.ISO_DATE)}"
             .httpGet()
             .authentication()
             .bearer(token)
@@ -37,7 +37,10 @@ class InfotrygdHttpIntegrasjon(
             tjenestekallLog.info(it.toString())
         }.let {
             JsonConfig.infotrygdMapper.readValue(it) as ITSykepenger
-        }.sykmeldingsperioder.asPerioder()
+        }.sykmeldingsperioder.asPerioder().filter {
+            // TODO: fjern filter når Infotrygd støtter `tilDato` i tjenesten
+            it.fom <= tom
+        }
     }
 }
 
