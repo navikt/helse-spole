@@ -34,7 +34,7 @@ class InfotrygdHttpIntegrasjon(
             .response()
 
         return result.get().also {
-            tjenestekallLog.info(it.toString())
+            tjenestekallLog.info(String(it))
         }.let {
             JsonConfig.infotrygdMapper.readValue(it) as ITSykepenger
         }.sykmeldingsperioder.asPerioder().filter {
