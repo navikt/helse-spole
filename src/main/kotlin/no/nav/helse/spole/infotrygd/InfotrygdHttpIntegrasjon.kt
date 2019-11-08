@@ -37,10 +37,7 @@ class InfotrygdHttpIntegrasjon(
             tjenestekallLog.info(String(it))
         }.let {
             JsonConfig.infotrygdMapper.readValue(it) as ITSykepenger
-        }.sykmeldingsperioder.asPerioder().filter {
-            // TODO: fjern filter når Infotrygd støtter `tilDato` i tjenesten
-            it.fom <= tom
-        }
+        }.sykmeldingsperioder.asPerioder()
     }
 }
 
